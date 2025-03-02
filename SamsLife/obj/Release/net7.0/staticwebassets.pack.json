@@ -1,0 +1,77 @@
+{
+  "Files": [
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/obj/Release/net7.0/scopedcss/projectbundle/SamsLife.bundle.scp.css",
+      "PackagePath": "staticwebassets/SamsLife.bundle.scp.css"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/open-iconic/FONT-LICENSE",
+      "PackagePath": "staticwebassets/css/open-iconic"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/open-iconic/ICON-LICENSE",
+      "PackagePath": "staticwebassets/css/open-iconic"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/open-iconic/README.md",
+      "PackagePath": "staticwebassets/css/open-iconic/README.md"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/open-iconic/font/css/open-iconic-bootstrap.min.css",
+      "PackagePath": "staticwebassets/css/open-iconic/font/css/open-iconic-bootstrap.min.css"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/open-iconic/font/fonts/open-iconic.eot",
+      "PackagePath": "staticwebassets/css/open-iconic/font/fonts/open-iconic.eot"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/open-iconic/font/fonts/open-iconic.otf",
+      "PackagePath": "staticwebassets/css/open-iconic/font/fonts/open-iconic.otf"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/open-iconic/font/fonts/open-iconic.svg",
+      "PackagePath": "staticwebassets/css/open-iconic/font/fonts/open-iconic.svg"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/open-iconic/font/fonts/open-iconic.ttf",
+      "PackagePath": "staticwebassets/css/open-iconic/font/fonts/open-iconic.ttf"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/open-iconic/font/fonts/open-iconic.woff",
+      "PackagePath": "staticwebassets/css/open-iconic/font/fonts/open-iconic.woff"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/css/site.css",
+      "PackagePath": "staticwebassets/css/site.css"
+    },
+    {
+      "Id": "/home/nagendra/rp-ai/SamsLife/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "obj/Release/net7.0/staticwebassets/msbuild.SamsLife.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Release/net7.0/staticwebassets/msbuild.build.SamsLife.props",
+      "PackagePath": "build\\SamsLife.props"
+    },
+    {
+      "Id": "obj/Release/net7.0/staticwebassets/msbuild.buildMultiTargeting.SamsLife.props",
+      "PackagePath": "buildMultiTargeting\\SamsLife.props"
+    },
+    {
+      "Id": "obj/Release/net7.0/staticwebassets/msbuild.buildTransitive.SamsLife.props",
+      "PackagePath": "buildTransitive\\SamsLife.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

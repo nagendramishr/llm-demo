@@ -1,0 +1,57 @@
+﻿@page "/"
+@using SamsLife.Data
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage BrowserStorage
+
+<PageTitle>Index</PageTitle>
+
+<h1>Sam's Life!</h1>
+
+
+<p>This is the story of Sam.  You the audience will help us by providing us with details about his life. And then to showcase the power of generative AI, we'll let OpenAI create some summaries about Sam's life.</p>
+
+<p>Type in a fact about Sam's life below:</p> 
+
+<form><input type="text" name="fact" @bind="userFact" />
+<input type="submit" text="Submit" @onclick="@( async() => await AddFact(userFact))"/>
+</form>
+
+@code {
+    string userFact;
+    string currentInputValue;
+    
+      public async Task Save()
+    {
+        await BrowserStorage.SetAsync("name", currentInputValue);
+    } 
+
+    public async Task Read()
+    {
+        var result = await BrowserStorage.GetAsync<string>("name");
+        currentInputValue = result.Success ? result.Value ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
+    }
+
+    // Clean this up LATER!!!! .. basically, I think there is a round trip here that is not needed.
+    protected async Task OnAfterRenderAsync() // = On Page Load
+    {   
+        await Read();
+        await Save();
+        StateHasChanged();
+    }
+
+    private static HttpClient sharedClient = new()
+    {
+        BaseAddress = new Uri("https://nvmopenai.azurewebsites.net/")
+    };
+
+    // HttpClient lifecycle management best practices:
+    // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
+    private async Task AddFact( string inputString)
+    {
+
+        await OnAfterRenderAsync();
+        Console.WriteLine("here " + currentInputValue);
+        await sharedClient.PostAsJsonAsync("api/newFact?code=wemVRU_eyFtIdTAewttRzFw4Z_zXvZ3CiehH7vV9FeMpAzFu7lIpfQ==", 
+                new SamFact { Id = currentInputValue, Text = inputString });
+    }
+}

@@ -1,0 +1,35 @@
+,
+    {
+      "name": "outputDocument",
+      "direction": "out",
+      "type": "documentDB",
+      "Connection": "nvmopenaicosmosdb_DOCUMENTDB",
+      "databaseName": "openai",
+      "containerName": "samfacts"
+    }
+
+    //   1
+//    outputDocument = new {
+//        id="34234234",
+//        Id = samfact.Id,
+//        Text = samfact.Text
+//    };
+
+,
+    {
+      "name": "outputDocument",
+      "type": "cosmosDB",
+      "databaseName": "openai",
+      "collectionName": "samfacts",
+      "createIfNotExists": true,
+      "connectionStringSetting": "nvmopenaicosmosdb_DOCUMENTDB",
+      "direction": "out"
+    }
+
+nagendra [ ~ ]$ resourceGroupName="OpenAIdemo"
+nagendra [ ~ ]$ accountName="nvmopenaicosmosdb"
+nagendra [ ~ ]$ readOnlyRoleDefinitionId="00000000-0000-0000-0000-000000000002"
+nagendra [ ~ ]$ principalId='72fd4d26-7f92-45c3-877e-bd98df9fe222'
+nagendra [ ~ ]$ az cosmosdb sql role assignment create --account-name $accountName --resource-group $resourceGroupName --scope "/" --principal-id $principalId --role-definition-id $readOnlyRoleDefinitionId
+
+
