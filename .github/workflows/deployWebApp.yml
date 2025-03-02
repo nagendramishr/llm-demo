@@ -59,12 +59,8 @@ jobs:
         run: |
           dotnet build --configuration Release
           dotnet publish -c Release --property:PublishDir='Release/${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
-          echo "ls 1"
-          ls -lr Release
-          echo "ls 2"
-          ls -lr Release/SamsLife
           echo "ls 3"
-          ls -ltr Release/SamsLife/myapp`
+          ls -ltr Release/SamsLife/myapp
           
       # Deploy to Azure Web apps
       - name: 'Run Azure webapp deploy action using publish profile credentials'
