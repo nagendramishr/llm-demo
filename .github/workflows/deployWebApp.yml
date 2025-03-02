@@ -54,8 +54,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Build with dotnet
+      - name: dotnet build and publish
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        run: |
           dotnet build --configuration Release
           dotnet publish -c Release --property:PublishDir='${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
           
