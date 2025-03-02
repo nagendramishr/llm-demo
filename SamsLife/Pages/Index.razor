@@ -1,7 +1,9 @@
 ﻿@page "/"
 @using SamsLife.Data
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Net.Http
 @inject ProtectedLocalStorage BrowserStorage
+@inject IConfiguration Configuration
 
 <PageTitle>Index</PageTitle>
 
@@ -16,9 +18,19 @@
 <input type="submit" text="Submit" @onclick="@( async() => await AddFact(userFact))"/>
 </form>
 
+@if (errorOccurred) {
+    <p>@errorMessage</p>
+
+}
+
+
 @code {
+
     string userFact;
     string currentInputValue;
+
+    bool errorOccurred = false;
+    string errorMessage = "";
     
       public async Task Save()
     {
@@ -39,10 +51,8 @@
         StateHasChanged();
     }
 
-    private static HttpClient sharedClient = new()
-    {
-        BaseAddress = new Uri("https://nvmopenai.azurewebsites.net/")
-    };
+    private static HttpClient? sharedClient;
+    
 
     // HttpClient lifecycle management best practices:
     // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
@@ -50,8 +60,23 @@
     {
 
         await OnAfterRenderAsync();
-        Console.WriteLine("here " + currentInputValue);
-        await sharedClient.PostAsJsonAsync("api/newFact?code=wemVRU_eyFtIdTAewttRzFw4Z_zXvZ3CiehH7vV9FeMpAzFu7lIpfQ==", 
-                new SamFact { Id = currentInputValue, Text = inputString });
+        if (sharedClient == null)
+        {
+            var SamFuncHost = Configuration["SamFunction:Hostname"];
+            var SamAuth = Configuration["SamFunction:FunctionKey"];
+
+            sharedClient = new HttpClient();
+            sharedClient.BaseAddress = new Uri("https://" + SamFuncHost);
+            sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
+        }
+
+        try {
+            await sharedClient.PostAsJsonAsync("api/newFact", 
+                    new SamFact { Id = currentInputValue, Text = inputString });
+        } catch (HttpRequestException e) {
+            errorOccurred = true;
+            errorMessage = e.Message;
+            Console.WriteLine(e);
+        }
     }
 }
