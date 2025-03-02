@@ -30,4 +30,14 @@ resource appService 'Microsoft.Web/sites@2021-02-01' = {
   }
 }
 
+resource scmBasicAuth 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
+  name: '${appServiceName}/scm'
+  properties: {
+    allow: true
+  }
+  dependsOn: [
+    appService
+  ]
+}
+
 output appServiceEndpoint string = appService.properties.defaultHostName

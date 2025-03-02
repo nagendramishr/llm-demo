@@ -6,6 +6,8 @@
 
 ## Steps to Deploy
 
+Run the following code on your laptop or in the Azure cloud shell:
+
 ### 1. Log in to Azure
 First, log in to your Azure account using the Azure CLI:
 ```
@@ -33,3 +35,11 @@ Deploy the `AppService.bicep` file within the created resource group:
 ```
 az deployment group create --resource-group $resourceGroupName --template-file /workspaces/llm-demo/IAC/AppService.bicep --parameters resourceGroupName=$resourceGroupName location=$LOCATION appServicePlanName=$appServicePlanName appServiceName=$appServiceName
 ```
+### 5. Download the Publish Profile
+Download the publish profile for the App Service. This profile will be used to deploy your application from GitHub Actions:
+```
+az webapp deployment list-publishing-profiles --name $appServiceName --resource-group $resourceGroupName --query "[?publishMethod=='MSDeploy'].{publishUrl:publishUrl, userName:userName, userPWD:userPWD}" --output tsv > publishProfile.txt
+```
+
+### 6. Upload the Publish Profile as a GitHub Secret
+Go to your GitHub repository, navigate to **Settings** > **Secrets and variables** > **Actions** > **New repository secret**. Name the secret `AZURE_WEBAPP_PUBLISH_PROFILE` and upload the contents of the `publishProfile.txt` file.

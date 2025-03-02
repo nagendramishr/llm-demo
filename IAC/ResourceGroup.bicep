@@ -1,3 +1,5 @@
+targetScope = 'subscription'
+
 @description('The name of the Resource Group')
 param resourceGroupName string
 
