@@ -85,21 +85,8 @@ jobs:
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.SAMWEBPROFILE }}
           package: '.'
-
-
-
-          
-      # Deploy to Azure Web apps
-      - name: 'Run Azure webapp deploy action using publish profile credentials'
-        uses: azure/webapps-deploy@v3
-        with: 
-          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-          publish-profile: ${{ secrets.SAMWEBPROFILE  }} # Define secret variable in repository settings as per action documentation
-          package: 'Release/${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
-
-                
