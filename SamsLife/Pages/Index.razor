@@ -14,6 +14,8 @@
 
 <p>Type in a fact about Sam's life below:</p> 
 
+<p>@status</p>
+
 <form><input type="text" name="fact" @bind="userFact" />
 <input type="submit" text="Submit" @onclick="@( async() => await AddFact(userFact))"/>
 </form>
@@ -28,6 +30,7 @@
 
     string userFact;
     string currentInputValue;
+    string status = "";
 
     bool errorOccurred = false;
     string errorMessage = "";
@@ -64,6 +67,8 @@
         {
             var SamFuncHost = Configuration["SamFunction:Hostname"];
             var SamAuth = Configuration["SamFunction:FunctionKey"];
+
+            status = $"Saving to {SamFuncHost} : {SamAuth}"; 
 
             sharedClient = new HttpClient();
             sharedClient.BaseAddress = new Uri("https://" + SamFuncHost);
