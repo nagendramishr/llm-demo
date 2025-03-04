@@ -16,15 +16,39 @@
 
 <p>@status</p>
 
-<form><input type="text" name="fact" @bind="userFact" />
-<input type="submit" text="Submit" @onclick="@( async() => await AddFact(userFact))"/>
-</form>
+<div class="parent">
+    <input style="width: 400px; height: 300px;" rows="10" cols="40" type="text" name="fact" @bind="userFact" />
+    <div class="button-like"  @onclick="@( async() => await AddFact(userFact))"> Submit</div>
+</div>
 
 @if (errorOccurred) {
     <p>@errorMessage</p>
 
 }
 
+<style>
+.parent {
+    display: flex;
+    justify-content: left;
+    align-items: top;
+    height: 100vh;
+}
+.button-like {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+    height: 40px;
+}
+
+.button-like:hover {
+    background-color: #0056b3;
+}
+</style>
 
 @code {
 
@@ -56,12 +80,10 @@
 
     private static HttpClient? sharedClient;
     
-
     // HttpClient lifecycle management best practices:
     // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
     private async Task AddFact( string inputString)
     {
-
         await OnAfterRenderAsync();
         if (sharedClient == null)
         {
@@ -73,6 +95,8 @@
             sharedClient = new HttpClient();
             sharedClient.BaseAddress = new Uri("https://" + SamFuncHost);
             sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
+
+            StateHasChanged();
         }
 
         try {
