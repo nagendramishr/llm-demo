@@ -1,0 +1,111 @@
+@page "/"
+@using SamsLife.Data
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Net.Http
+@inject ProtectedLocalStorage BrowserStorage
+@inject IConfiguration Configuration
+
+<PageTitle>Index</PageTitle>
+
+<h1>Sam's Life!</h1>
+
+
+<p>This is the story of Sam.  You the audience will help us by providing us with details about his life. And then to showcase the power of generative AI, we'll let OpenAI create some summaries about Sam's life.</p>
+
+<p>Type in a fact about Sam's life below:</p> 
+
+<p>@status</p>
+
+<div class="parent">
+    <input style="width: 400px; height: 300px;" rows="10" cols="40" type="text" name="fact" @bind="userFact" />
+    <div class="button-like"  @onclick="@( async() => await AddFact(userFact))"> Submit</div>
+</div>
+
+@if (errorOccurred) {
+    <p>@errorMessage</p>
+
+}
+
+<style>
+.parent {
+    display: flex;
+    justify-content: left;
+    align-items: top;
+    height: 100vh;
+}
+.button-like {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+    height: 40px;
+}
+
+.button-like:hover {
+    background-color: #0056b3;
+}
+</style>
+
+@code {
+
+    string userFact;
+    string currentInputValue;
+    string status = "";
+
+    bool errorOccurred = false;
+    string errorMessage = "";
+    
+      public async Task Save()
+    {
+        await BrowserStorage.SetAsync("name", currentInputValue);
+    } 
+
+    public async Task Read()
+    {
+        var result = await BrowserStorage.GetAsync<string>("name");
+        currentInputValue = result.Success ? result.Value ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
+    }
+
+    // Clean this up LATER!!!! .. basically, I think there is a round trip here that is not needed.
+    protected async Task OnAfterRenderAsync() // = On Page Load
+    {   
+        await Read();
+        await Save();
+        StateHasChanged();
+    }
+
+    private static HttpClient? sharedClient;
+    
+    // HttpClient lifecycle management best practices:
+    // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
+    private async Task AddFact( string inputString)
+    {
+        await OnAfterRenderAsync();
+        if (sharedClient == null)
+        {
+            var SamFuncHost = Configuration["SamFunction:Hostname"];
+            var SamAuth = Configuration["SamFunction:FunctionKey"];
+
+            status = $"Saving to {SamFuncHost} : {SamAuth}"; 
+
+            sharedClient = new HttpClient();
+            sharedClient.BaseAddress = new Uri("https://" + SamFuncHost);
+            sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
+
+            StateHasChanged();
+        }
+
+        try {
+            await sharedClient.PostAsJsonAsync("api/newFact", 
+                    new SamFact { Id = currentInputValue, Text = inputString });
+        } catch (HttpRequestException e) {
+            errorOccurred = true;
+            errorMessage = e.Message;
+            Console.WriteLine(e);
+        }
+    }
+}
