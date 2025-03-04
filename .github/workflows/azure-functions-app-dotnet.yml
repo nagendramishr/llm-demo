@@ -47,4 +47,4 @@ jobs:
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
         publish-profile: ${{ secrets.SAMFACTFUNCPRFILE }} # Remove publish-profile to use Azure RBAC
         sku: flexconsumption 
-        remote-build: true
+        remote-build: false
