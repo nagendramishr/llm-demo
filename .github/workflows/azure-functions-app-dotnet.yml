@@ -21,8 +21,9 @@ name: Deploy Azure Function App
 on:
   push:
     branches: ["main"]
-  path:
-    - "Functions/**"
+    paths:
+      - "Functions/**"
+  workflow_dispatch:
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'samfacts'   # set this to your function app name on Azure
