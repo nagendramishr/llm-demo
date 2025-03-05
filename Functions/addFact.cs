@@ -29,7 +29,7 @@ namespace Functions
             try {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var data = JsonSerializer.Deserialize<JsonElement>(requestBody);
-                string message = data.GetProperty("message").GetString();
+                string message = data.GetProperty("Message").GetString();
 
                 // Return a response to both HTTP trigger and storage output binding.
                 return new MultiResponse()

@@ -11,7 +11,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AzureFunction
+namespace Functions
 {
     public class getFacts
     {
@@ -31,7 +31,7 @@ namespace AzureFunction
 
             foreach (var sf in allFacts) {
             //         log.LogInformation($"ID: {sf.id} Text: {sf.text}");
-                var a = sf.message.Trim();
+                var a = sf.Message.Trim();
                 if (a.EndsWith(".")) {
                     sb.Append(a+ " ");
                 }

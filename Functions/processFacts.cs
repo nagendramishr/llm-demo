@@ -16,9 +16,23 @@ namespace Functions
 
         [Function(nameof(processFacts))]
         [CosmosDBOutput(databaseName:"%CosmosDb%", containerName:"%CosmosContainer%", Connection = "dbstr", CreateIfNotExists = true)]
-        public void Run([QueueTrigger("output-queue", Connection = "")] QueueMessage message)
+        public SamFact? Run([QueueTrigger("output-queue", Connection = "Queue")] QueueMessage message)
         {
             _logger.LogInformation($"C# Queue trigger function processed: {message.MessageText}");
+
+            if (!string.IsNullOrEmpty( message.MessageText) ) {
+                SamFact sf = new ();
+                sf.Id = Guid.NewGuid().ToString();
+                sf.Message = message.MessageText.Trim();
+                if (!sf.Message.EndsWith(".")) {
+                    sf.Message = sf.Message + ".";
+                }
+
+                return sf;
+            }
+            else {
+                return null;
+            }
         }
     }
 }

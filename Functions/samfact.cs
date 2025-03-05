@@ -1,8 +1,8 @@
 
-namespace AzureFunction
+namespace Functions
 { 
     public class SamFact {
-        public string message {get; set; }
-        public string id { get; set; }
+        public string Message {get; set; }
+        public string Id { get; set; }
     }
 }
