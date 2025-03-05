@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Extensions;
-using Microsoft.Azure.Functions.Worker.Extensions.CosmosDB; // Add this line
+using Microsoft.Azure.Functions.Worker.Extensions.CosmosDB; 
 using System.Text.Json;
 using System.IO;
 using System.Text;
