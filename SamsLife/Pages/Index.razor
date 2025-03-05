@@ -9,18 +9,28 @@
 
 <h1>Sam's Life!</h1>
 
+@if (isReady) {
 
-<p>This is the story of Sam.  You the audience will help us by providing us with details about his life. And then to showcase the power of generative AI, we'll let OpenAI create some summaries about Sam's life.</p>
+    <p>This is the story of Sam.  You the audience will help us by providing us with details about his life. And then to showcase the power of generative AI, we'll let OpenAI create some summaries about Sam's life.</p>
 
-<p>Type in a fact about Sam's life below:</p> 
+    <p>Type in a fact about Sam's life below:</p> 
 
-<p>@status</p>
+    <p>@status</p>
 
-<div class="parent">
-    <input style="width: 400px; height: 300px;" rows="10" cols="40" type="text" name="fact" @bind="userFact" />
-    <div class="button-like"  @onclick="@( async() => await AddFact(userFact))"> Submit</div>
-</div>
+    <div class="parent">
+        <input style="width: 400px; height: 300px;" rows="10" cols="40" type="text" name="fact" @bind="userFact" />
+        <div class="button-like"  @onclick="@( async() => await AddFact(userFact))"> Submit</div>
+    </div>
+}
+else if (isSubmitting) {
+    <p>Saving...</p>
+}
+else if (isDoneSubmitting) {
+    <p>Your fact has been Submitted!  </p>
 
+    <p>Click continue to enter another fact</p>
+    <div class="button-like"  @onclick="@(async () => await Reset())"> Continue</div>
+}
 @if (errorOccurred) {
     <p>@errorMessage</p>
 
@@ -55,6 +65,9 @@
     string userFact;
     string currentInputValue;
     string status = "";
+    bool isReady = true;
+    bool isSubmitting = false;
+    bool isDoneSubmitting = false;
 
     bool errorOccurred = false;
     string errorMessage = "";
@@ -78,6 +91,20 @@
         StateHasChanged();
     }
 
+    private async Task Reset()
+    {
+        isDoneSubmitting = false;
+        isSubmitting = false;
+        isReady = true;
+        StateHasChanged();
+
+        // delay for 3 seconds and clear
+        await Task.Delay(3000);
+        status = "";
+        StateHasChanged();
+
+    }
+
     private static HttpClient? sharedClient;
     
     // HttpClient lifecycle management best practices:
@@ -90,12 +117,13 @@
             var SamFuncHost = Configuration["SamFunction:Hostname"];
             var SamAuth = Configuration["SamFunction:FunctionKey"];
 
-            status = $"Saving to {SamFuncHost} : {SamAuth}"; 
+            status = "Uploading your fact to the cloud...";
+            isReady = false; 
 
             sharedClient = new HttpClient();
             sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
             sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
-
+            isSubmitting = true;
             StateHasChanged();
         }
 
@@ -107,5 +135,11 @@
             errorMessage = e.Message;
             Console.WriteLine(e);
         }
+
+        isSubmitting = false;
+        isDoneSubmitting = true;
+        userFact = "";
+        status = "Your fact has been submitted!";
+        StateHasChanged();
     }
 }
