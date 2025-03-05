@@ -30,7 +30,7 @@ namespace Functions
         }
 
         [Function("getSummary")]
-        public async IActionResult Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req,
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
@@ -64,62 +64,60 @@ namespace Functions
 
             return new OkObjectResult(response);
         }
+
+        async Task<string> RunQueryAsync(string prompt)  
+        {  
+            // Retrieve the OpenAI endpoint from environment variables
+            var endpoint = GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? "";  
+            if (string.IsNullOrEmpty(endpoint))  
+            {  
+                return "Please set the AZURE_OPENAI_ENDPOINT environment variable.";  
+            }  
+            
+            // Use DefaultAzureCredential for Entra ID authentication
+            var credential = new DefaultAzureCredential();  
+            
+            // Initialize the AzureOpenAIClient
+            var azureClient = new AzureOpenAIClient(new Uri(endpoint), credential);  
+            
+            // Initialize the ChatClient with the specified deployment name
+            ChatClient chatClient = azureClient.GetChatClient("gpt-4o");  
+            
+            // Create a list of chat messages
+            var messages = new List<ChatMessage>  
+            {  
+                new SystemChatMessage(prompt),
+            };  
+            
+            // Create chat completion options  
+            var options = new ChatCompletionOptions{  
+                Temperature = (float)0.7,  
+                MaxOutputTokenCount = 800,  
+                
+                TopP=(float)0.95,  
+                FrequencyPenalty=(float)0,  
+                PresencePenalty=(float)0
+            };  
+            
+            try  
+            {  
+                // Create the chat completion request
+                ChatCompletion completion = await chatClient.CompleteChatAsync(messages, options);  
+            
+                // Print the response
+                if (completion != null)
+                {
+                    return JsonSerializer.Serialize(completion, new JsonSerializerOptions() { WriteIndented = true });
+                } 
+                else  
+                {  
+                    return "No response received.";  
+                }  
+            }  
+            catch (Exception ex)  
+            {  
+                return $"An error occurred: {ex.Message}";  
+            }  
+        }  
     }
-
-    async Task<string> RunQueryAsync(string prompt)  
-      {  
-          // Retrieve the OpenAI endpoint from environment variables
-          var endpoint = GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? "";  
-          if (string.IsNullOrEmpty(endpoint))  
-          {  
-              return "Please set the AZURE_OPENAI_ENDPOINT environment variable.";  
-          }  
-        
-          // Use DefaultAzureCredential for Entra ID authentication
-          var credential = new DefaultAzureCredential();  
-        
-          // Initialize the AzureOpenAIClient
-          var azureClient = new AzureOpenAIClient(new Uri(endpoint), credential);  
-          
-          // Initialize the ChatClient with the specified deployment name
-          ChatClient chatClient = azureClient.GetChatClient("gpt-4o");  
-          
-          // Create a list of chat messages
-          var messages = new List<ChatMessage>  
-          {  
-              new SystemChatMessage(prompt),
-          };  
-        
-          // Create chat completion options  
-          var options = new ChatCompletionOptions{  
-              Temperature = (float)0.7,  
-              MaxOutputTokenCount = 800,  
-              
-              TopP=(float)0.95,  
-              FrequencyPenalty=(float)0,  
-              PresencePenalty=(float)0
-          };  
-        
-          try  
-          {  
-              // Create the chat completion request
-              ChatCompletion completion = await chatClient.CompleteChatAsync(messages, options);  
-        
-              // Print the response
-              if (completion != null)
-              {
-                  return JsonSerializer.Serialize(completion, new JsonSerializerOptions() { WriteIndented = true }));
-              } 
-              else  
-              {  
-                  return "No response received.";  
-              }  
-          }  
-          catch (Exception ex)  
-          {  
-              return $"An error occurred: {ex.Message}";  
-          }  
-      }  
-        
-
 }
