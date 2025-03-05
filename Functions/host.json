@@ -8,6 +8,10 @@
             "maxDequeueCount": 5,
             "newBatchThreshold": 8,
             "messageEncoding": "base64"
+        },
+        "cosmosDB": {
+            "connectionMode": "Gateway",
+            "userAgentSuffix": "MyDesiredUserAgentStamp"
         }
     },
         "logging": {
