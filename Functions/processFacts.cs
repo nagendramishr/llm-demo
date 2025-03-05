@@ -16,7 +16,7 @@ namespace Functions
 
         [Function(nameof(processFacts))]
         [CosmosDBOutput(databaseName:"%CosmosDb%", containerName:"%CosmosContainer%", Connection = "dbstr", CreateIfNotExists = true)]
-        public void Run([QueueTrigger("myqueue-items", Connection = "")] QueueMessage message)
+        public void Run([QueueTrigger("output-queue", Connection = "")] QueueMessage message)
         {
             _logger.LogInformation($"C# Queue trigger function processed: {message.MessageText}");
         }
