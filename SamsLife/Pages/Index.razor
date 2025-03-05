@@ -128,8 +128,12 @@ else if (isDoneSubmitting) {
         }
 
         try {
-            await sharedClient.PostAsJsonAsync("api/addFact", 
-                    new SamFact { Id = currentInputValue, message = inputString });
+//            Console.WriteLine($"Adding fact: {inputString}");
+            var sf = new SamFact() { Id = currentInputValue, Message = inputString };
+            string json = System.Text.Json.JsonSerializer.Serialize(sf);
+//            Console.WriteLine($"Serialized fact: {json}");
+//            Console.WriteLine($"Sending to {sharedClient.BaseAddress}api/addFact");
+            await sharedClient.PostAsync("api/addFact", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
         } catch (HttpRequestException e) {
             errorOccurred = true;
             errorMessage = e.Message;

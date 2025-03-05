@@ -4,7 +4,7 @@ using Microsoft.Net.Http.Headers;
 
 
 public class SamFact {
-    public string? message {get; set; }
+    public string? Message {get; set; }
     public string Id { get; set; }
 
     public SamFact()
