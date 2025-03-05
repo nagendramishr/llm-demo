@@ -23,7 +23,6 @@ namespace Functions
 
             if (!string.IsNullOrEmpty( message.MessageText) ) {
                 SamFact sf = new ();
-                sf.Id = Guid.NewGuid().ToString();
                 sf.Message = message.MessageText.Trim();
                 if (!sf.Message.EndsWith(".")) {
                     sf.Message = sf.Message + ".";
