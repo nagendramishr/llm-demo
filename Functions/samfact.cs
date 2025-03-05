@@ -7,17 +7,18 @@ namespace Functions
         public string id { get; set; }
         public SamFact()
         {
-            Id = Guid.NewGuid().ToString();
+            id=Id = Guid.NewGuid().ToString();
         }
         public SamFact(string message)
         {
             Message = message;
-            Id = Guid.NewGuid().ToString();
+            id=Id = Guid.NewGuid().ToString();
         }
         public SamFact(string message, string id)
         {
             Message = message;
             Id = id;
+            this.id = id;
         }
     }
 }

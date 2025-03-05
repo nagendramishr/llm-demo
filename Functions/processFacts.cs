@@ -2,6 +2,7 @@ using System;
 using Azure.Storage.Queues.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using System.Text.Json; 
 
 namespace Functions
 {
@@ -16,9 +17,9 @@ namespace Functions
 
         [Function(nameof(processFacts))]
         [CosmosDBOutput(databaseName:"%CosmosDb%", containerName:"%CosmosContainer%", Connection = "dbstr", CreateIfNotExists = true)]
-        public SamFact? Run([QueueTrigger("output-queue", Connection = "Queue")] QueueMessage message)
+        public string? Run([QueueTrigger("output-queue", Connection = "Queue")] QueueMessage message)
         {
-            _logger.LogInformation($"C# Queue trigger function processed: {message.MessageText}");
+            _logger.LogInformation($"C# Queue trigger function processing : {message.MessageText}");
 
             if (!string.IsNullOrEmpty( message.MessageText) ) {
                 SamFact sf = new ();
@@ -27,10 +28,11 @@ namespace Functions
                 if (!sf.Message.EndsWith(".")) {
                     sf.Message = sf.Message + ".";
                 }
-
-                return sf;
+                _logger.LogInformation($"Processed: {sf.Message}");
+                return JsonSerializer.Serialize(sf);
             }
             else {
+                _logger.LogError("Message is empty");
                 return null;
             }
         }
