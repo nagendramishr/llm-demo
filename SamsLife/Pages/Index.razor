@@ -129,7 +129,7 @@ else if (isDoneSubmitting) {
 
         try {
 //            Console.WriteLine($"Adding fact: {inputString}");
-            var sf = new SamFact() { Id = currentInputValue, Message = inputString };
+            var sf = new SamFact() { id = currentInputValue, Message = inputString };
             string json = System.Text.Json.JsonSerializer.Serialize(sf);
 //            Console.WriteLine($"Serialized fact: {json}");
 //            Console.WriteLine($"Sending to {sharedClient.BaseAddress}api/addFact");

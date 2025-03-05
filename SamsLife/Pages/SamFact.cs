@@ -5,13 +5,13 @@ using Microsoft.Net.Http.Headers;
 
 public class SamFact {
     public string? Message {get; set; }
-    public string Id { get; set; }
+    public string id { get; set; }
 
     public SamFact()
     {
 //        public static RandomNumberGenerator rg = RandomNumberGenerator.Create();
 
-        Id = "A213213";
+        id = "A213213";
     }
 
 }

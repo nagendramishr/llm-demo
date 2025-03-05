@@ -101,7 +101,7 @@
 
         try {
             await sharedClient.PostAsJsonAsync("api/newFact", 
-                    new SamFact { Id = currentInputValue, Message = inputString });
+                    new SamFact { id = currentInputValue, Message = inputString });
         } catch (HttpRequestException e) {
             errorOccurred = true;
             errorMessage = e.Message;
