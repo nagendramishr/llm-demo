@@ -10,15 +10,33 @@
 <h1>Sam's Life!</h1>
 
 
-<p>This is the story of Sam.  You the audience will help us by providing us with details about his life. And then to showcase the power of generative AI, we'll let OpenAI create some summaries about Sam's life.</p>
+<p>Let's anayze Sam's story.  Although we could let you try your own hand about this summary, we have a few 
+    pre-defined ways to summarize Sam's life.  Select one of the following:</p>
 
-<p>Type in a fact about Sam's life below:</p> 
+<div class="queryparent">
+    <div class="querylist" >
+        @foreach (KeyValuePair<string, string> query in queries)
+        {
+            <div class="query" @onclick="@( async() => await runQuery(query.Value))">
+                @query.Key
+            </div>
+        }
+    </div>
+    <div class="queryBox">
+        <h3>Query:</h3>
+        @queryText
+    </div>
+</div>
 
-<p>@status</p>
 
-<div class="parent">
-    <input style="width: 400px; height: 300px;" rows="10" cols="40" type="text" name="fact" @bind="userFact" />
-    <div class="button-like"  @onclick="@( async() => await AddFact(userFact))"> Submit</div>
+<div> Response from OpenAI: </div>
+<div>
+    @if (isLoading) {
+        <img src="circle.gif" alt="Loading..." />
+    }
+    else {
+        <textarea @bind="response" rows="10" cols="50"></textarea>
+    }
 </div>
 
 @if (errorOccurred) {
@@ -27,85 +45,110 @@
 }
 
 <style>
-.parent {
-    display: flex;
-    justify-content: left;
-    align-items: top;
-    height: 100vh;
-}
-.button-like {
-    background-color: #007bff;
-    color: #ffffff;
-    padding: 8px 16px;
-    border-radius: 4px;
-    display: inline-block;
-    cursor: pointer;
-    text-align: center;
-    user-select: none;
-    height: 40px;
-}
+    .queryparent {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: flex-start;
+        margin: 10px;
+        width: 800px;
+    }
 
-.button-like:hover {
-    background-color: #0056b3;
-}
+    .querylist {
+        display: flex;
+        flex-direction: column;
+        margin: 10px;
+    }
+
+    .query {
+        background-color: #f0f0f0;
+        padding: 10px;
+        cursor: pointer;
+        border: thin black solid;
+        width: 100%;
+    }
+
+    .queryText {
+        background-color: #f0f0f0;
+        border: thin black solid;
+    }
+
+    .queryBox {
+        padding: 10px;
+        cursor: pointer;
+        width: 500px;
+        height: auto; /* Make the queryBox take the height of its content */
+        flex-grow: 1;
+        align-self: flex-start; /* Align the queryBox at the top */
+        font-size:large 24px;
+    }
+
+    .query:hover {
+        background-color: #e0e0e0;
+    }
 </style>
 
 @code {
-
-    string userFact;
-    string currentInputValue;
-    string status = "";
-
+    Dictionary<string, string> queries = new Dictionary<string, string>
+    {
+        { "Summary", "Use the facts below to create a summary of Sam's life in a compact way without sacrificing readability." +
+                "Do not add any additional information or context, but if something doesn't make sense, add a commical commentary. " +
+                "Just present the facts as if this was a biography about Sam's life." },
+        { "Critique", "Using the facts below, identify facts that dot't fit.  Explain why each one doesn't quite fit, illustrating it if neccessary in a comedic way.  Consolidate your response in the form of a critique." },
+        { "Compare", "Using the facts below, compare Sam's life to that of a famous person.  Use the same format as a biography." },
+        { "Analyze", "Using the facts below, analyze Sam's life and identify any patterns or trends.  Use the same format as a biography." },
+        { "Expound", "Using the facts below, suggest activities that fit the trend but would fit in the missing gaps." }
+    };
+    string queryText = "< Select a query on the left to analyze Sam's life. >";
+    string response = "";
     bool errorOccurred = false;
     string errorMessage = "";
-    
-      public async Task Save()
-    {
-        await BrowserStorage.SetAsync("name", currentInputValue);
-    } 
 
-    public async Task Read()
-    {
-        var result = await BrowserStorage.GetAsync<string>("name");
-        currentInputValue = result.Success ? result.Value ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
-    }
-
-    // Clean this up LATER!!!! .. basically, I think there is a round trip here that is not needed.
+    bool isLoading = false;
     protected async Task OnAfterRenderAsync() // = On Page Load
     {   
-        await Read();
-        await Save();
-        StateHasChanged();
     }
-
-    private static HttpClient? sharedClient;
-    
-    // HttpClient lifecycle management best practices:
-    // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
-    private async Task AddFact( string inputString)
+    private static HttpClient? sharedClient;    
+    private async Task runQuery( string inputString)
     {
-        await OnAfterRenderAsync();
+        queryText = inputString;
+        response = "";
+        errorOccurred = false;
+        errorMessage = "";
+        isLoading = true;
+        StateHasChanged();
+
         if (sharedClient == null)
         {
             var SamFuncHost = Configuration["SamFunction:Hostname"];
             var SamAuth = Configuration["SamFunction:FunctionKey"];
 
-            status = $"Saving to {SamFuncHost} : {SamAuth}"; 
-
             sharedClient = new HttpClient();
-            sharedClient.BaseAddress = new Uri("https://" + SamFuncHost);
+            sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
             sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
-
-            StateHasChanged();
         }
 
         try {
-            await sharedClient.PostAsJsonAsync("api/newFact", 
-                    new SamFact { id = currentInputValue, Message = inputString });
+            var sf = new Query() { Text = queryText };
+            string json = System.Text.Json.JsonSerializer.Serialize(sf);
+
+            var httpResponse = await sharedClient.PostAsync("api/getSummary", 
+                                                            new StringContent(json, 
+                                                            System.Text.Encoding.UTF8, 
+                                                            "application/json"));
+
+            httpResponse.EnsureSuccessStatusCode();
+            response = await httpResponse.Content.ReadAsStringAsync();
+
+            isLoading = false;
+            StateHasChanged();
+
         } catch (HttpRequestException e) {
             errorOccurred = true;
             errorMessage = e.Message;
             Console.WriteLine(e);
         }
+
+            StateHasChanged();
     }
 }
