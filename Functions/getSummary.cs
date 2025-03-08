@@ -75,10 +75,11 @@ namespace Functions
             }  
             
             // Use DefaultAzureCredential for Entra ID authentication
-            var credential = new DefaultAzureCredential();  
+            var credential = new DefaultAzureCredential(); 
+            AzureOpenAIClient azureClient; 
             try {
             // Initialize the AzureOpenAIClient
-            var azureClient = new AzureOpenAIClient(new Uri(endpoint), credential);  
+                azureClient = new AzureOpenAIClient(new Uri(endpoint), credential);  
             } catch (Exception e ) {
                 return $"Error initializing AzureOpenAIClient: {e.Message}";
             }
