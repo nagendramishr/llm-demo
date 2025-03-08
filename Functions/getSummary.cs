@@ -76,10 +76,12 @@ namespace Functions
             
             // Use DefaultAzureCredential for Entra ID authentication
             var credential = new DefaultAzureCredential();  
-            
+            try {
             // Initialize the AzureOpenAIClient
             var azureClient = new AzureOpenAIClient(new Uri(endpoint), credential);  
-            
+            } catch (Exception e ) {
+                return $"Error initializing AzureOpenAIClient: {e.Message}";
+            }
             // Initialize the ChatClient with the specified deployment name
             ChatClient chatClient = azureClient.GetChatClient("gpt-4o");  
             
