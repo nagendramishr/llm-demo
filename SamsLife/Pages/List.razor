@@ -1,0 +1,142 @@
+﻿@page "/list"
+@using SamsLife.Data
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Net.Http
+@using System.Text.Json
+@inject ProtectedLocalStorage BrowserStorage
+@inject IConfiguration Configuration
+
+<PageTitle>List</PageTitle>
+
+<h1>All The Facts</h1>
+
+<div class="button" @onclick="@( async() => await GetFacts())">Refresh</div>
+
+@if (isReady) {
+    <hr>
+    <div class="list">
+        @foreach (string fact in facts)
+        {
+            <div class="fact">
+                    @fact
+            </div>
+        }
+    </div>
+}
+else if (isLoading) {
+    <p>Loadubg...</p>
+}
+
+@if (errorOccurred) {
+    <p>@errorMessage</p>
+
+}
+
+<style>
+.list {
+    margin-top: 40px;
+    display: flex;
+    flex-direction:column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 400px; /* Set a fixed height for the list */
+    overflow-y: auto; /* Add vertical scrollbar */
+    width: 60%;
+}
+.fact {
+    background-color: #f8f9fa;
+    color: #212529;
+    padding: 8px 16px;
+    border-radius: 0px;
+    border: 1px solid #ced4da;
+    display: inline-block;
+    cursor: pointer;
+    text-align: left;
+    user-select: none;
+    height: auto;;
+    margin-bottom: 0px;
+    width: 100%;
+    word-wrap: break-word;
+}
+.button {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+    height: 40px;
+}
+
+.button-like:hover {
+    background-color: #0056b3;
+}
+</style>
+
+@code {
+
+    List<string> facts = new List<string>();
+    bool isReady = false;
+    bool isLoading = false;
+    bool errorOccurred = false;
+    string errorMessage = "";
+    
+
+    // Clean this up LATER!!!! .. basically, I think there is a round trip here that is not needed.
+    protected async Task OnAfterRenderAsync() // = On Page Load
+    {   
+        StateHasChanged();
+    }
+
+    private static HttpClient? sharedClient;
+    
+    // HttpClient lifecycle management best practices:
+    // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
+    private async Task GetFacts( )
+    {
+        await OnAfterRenderAsync();
+        if (sharedClient == null)
+        {
+            var SamFuncHost = Configuration["SamFunction:Hostname"];
+            var SamAuth = Configuration["SamFunction:FunctionKey"];
+
+            isReady = false; 
+
+            sharedClient = new HttpClient();
+            sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
+            sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
+            isLoading = true;
+            StateHasChanged();
+        }
+
+        try {
+
+            var httpResponse = await sharedClient.GetAsync("api/getFacts");
+
+            httpResponse.EnsureSuccessStatusCode();
+            var response = await httpResponse.Content.ReadAsStringAsync();
+            // Parse the response to get the response text
+            var responses = System.Text.Json.JsonSerializer.Deserialize<List<string>>(response);
+            if (responses != null)
+            {
+                facts = responses;
+            }
+            else
+            {
+                errorOccurred = true;
+                errorMessage = "No facts found.";
+            }
+
+        } catch (HttpRequestException e) {
+            errorOccurred = true;
+            errorMessage = e.Message;
+            Console.WriteLine(e);
+        }
+
+        isLoading = false;
+        isReady = true;
+        StateHasChanged();
+    }
+}

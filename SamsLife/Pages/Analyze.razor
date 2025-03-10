@@ -1,4 +1,4 @@
-@page "/bio"
+@page "/analyze"
 @using SamsLife.Data
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using System.Net.Http
@@ -8,12 +8,13 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Sam's Life!</h1>
+<h1>Analyze the Facts!</h1>
 
 
-<p>Let's anayze Sam's story.  Although we could let you try your own hand about this summary, we have a few 
-    pre-defined ways to summarize Sam's life.  Select one of the following:</p>
+<p>Let's anayze the facts's we know solid far.  Although we could let you try your own hand about this summary, we have a few 
+    pre-defined ways to summarize them.  Select one of the following:</p>
 
+<h3>Query:</h3>
 <div class="queryparent">
     <div class="querylist" >
         @foreach (KeyValuePair<string, string> query in queries)
@@ -24,19 +25,26 @@
         }
     </div>
     <div class="queryBox">
-        <h3>Query:</h3>
         @queryText
     </div>
 </div>
 
-
-<div> Response from OpenAI: </div>
+<div>
+    <h3>Response:</h3>  
+</div>
 <div>
     @if (isLoading) {
         <img src="circle.gif" alt="Loading..." />
     }
     else {
-        <div class="response">
+        <hr>
+        <div> Font-Size: 
+            <span class="button" @onclick="@( async() => {fontSize="12px";} )">Small</span> 
+            <span class="button" @onclick="@( async() => {fontSize="24px";} )">Medium</span>
+            <span class="button" @onclick="@( async() => {fontSize="32px";} )">Large</span>
+        </div>
+        <hr>
+        <div class="response" style="font-size: @fontSize;">
             @response
         </div>
     }
@@ -48,6 +56,17 @@
 }
 
 <style>
+    .button {
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 8px 16px;
+        border-radius: 4px;
+        display: inline-block;
+        cursor: pointer;
+        text-align: center;
+        user-select: none;
+        height: 40px;
+    }
     .response {
         background-color: #f0f0f0;
         padding: 10px;
@@ -117,6 +136,7 @@
     string response = "";
     bool errorOccurred = false;
     string errorMessage = "";
+    string fontSize = "32px";
 
     bool isLoading = false;
     protected async Task OnAfterRenderAsync() // = On Page Load
@@ -145,8 +165,6 @@
         try {
             var sf = new Query() { Text = queryText };
             string json = System.Text.Json.JsonSerializer.Serialize(sf);
-
-            Console.WriteLine ($"Making a request to {sharedClient.BaseAddress} with the following JSON: {json}");
 
             var httpResponse =
                 await sharedClient.PostAsync("api/getSummary", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
@@ -183,6 +201,6 @@
             Console.WriteLine(e);
         }
 
-            StateHasChanged();
+        StateHasChanged();
     }
 }
