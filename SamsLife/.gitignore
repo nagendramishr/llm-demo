@@ -1,34 +1,145 @@
-# Ignore build outputs
-bin/
-obj/
-
-# Ignore user-specific files
-*.user
+# User-specific files
 *.rsuser
 *.suo
+*.user
 *.userosscache
 *.sln.docstates
 
-# Ignore Rider project files
-.idea/
+# Mono Auto Generated Files
+mono_crash.*
 
-# Ignore Visual Studio Code settings
-.vscode/
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
 
-# Ignore NuGet packages
-*.nupkg
-*.snupkg
+# Uncomment if you have tasks that create the project's static files in wwwroot
+#wwwroot/
 
-# Ignore logs
-*.log
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
 
-# Ignore temporary files
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# Build Results of an ATL Project
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+
+# Benchmark Results
+BenchmarkDotNet.Artifacts/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# StyleCop
+StyleCopReport.xml
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
 *.tmp
-*.temp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
 
-# Ignore publish outputs
-publish/
-out/
+# Chutzpah Test files
+_Chutzpah*
 
-# Ignore application settings
-appsettings*.json
+# Visual Studio 2019
+.vs2019/
+
+# Visual Studio 2022
+.vs2022/
+
+# Local History for Visual Studio
+.localhistory/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# VS Code directories
+.vscode/
+.history/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Rider Local History
+.idea/.idea.LocalHistory/
+
+# Rider logs
+.idea/.idea.log/
+.idea/.idea.log.*
+
+# Rider workspace
+.idea/workspace.xml
+
+# Rider tasks
+.idea/tasks.xml
+
+# Rider dictionaries
+.idea/dictionaries
+
+# Rider shelf
+.idea/shelf
+
+# Rider modules
+.idea/modules.xml
+
+# Rider run configurations
+.idea/runConfigurations
+
+# Rider vcs.xml
+.idea/vcs.xml
