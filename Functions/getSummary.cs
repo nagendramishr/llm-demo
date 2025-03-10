@@ -41,12 +41,16 @@ namespace Functions
         )
         {
             _logger.LogInformation("GetSummary:");
-
+            // Parse the request body
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var data = JsonSerializer.Deserialize<Query>(requestBody);
+            if (data == null || string.IsNullOrEmpty(data.Text))
+            {
+                data = new() { Text = "Please provide a valid request body with 'Text' property." };
+            }
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Use the facts below to create a summary of Sam's life in a compact way without sacrificing readability." +
-                "Do not add any additional information or context, but if something doesn't make sense, add a commical commentary. " +
-                "Just present the facts as if this was a biography about Sam's life.");
-                sb.AppendLine("Facts: ");
+            sb.AppendLine(data.Text);
+            sb.AppendLine("Facts: ");
 
             foreach (var sf in allFacts) {
                 var a = sf.Message.Trim();
