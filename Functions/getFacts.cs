@@ -27,20 +27,22 @@ namespace Functions
                 Connection = "dbstr")] IEnumerable<SamFact> allFacts,
             ILogger log)
         {
-            StringBuilder sb = new StringBuilder();
+            List<string> facts = new List<string>();
 
             foreach (var sf in allFacts) {
             //         log.LogInformation($"ID: {sf.id} Text: {sf.text}");
                 var a = sf.Message.Trim();
                 if (a.EndsWith(".")) {
-                    sb.Append(a+ " ");
+                    facts.Add(a);
                 }
                 else {
-                    sb.Append(a + ". ");
+                    facts.Add(a + ".");
                 }
             }
 
-            return new OkObjectResult(sb.ToString());
+            return new JsonResult(facts);
+
+            //return new  OkObjectResult(sb.ToString());
         }
     }
 }
