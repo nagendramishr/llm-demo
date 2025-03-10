@@ -1,7 +1,0 @@
-/home/nagendra/rp-ai/SamsLife/bin/Release/net7.0/publish/SamsLife
-/home/nagendra/rp-ai/SamsLife/bin/Release/net7.0/publish/appsettings.Development.json
-/home/nagendra/rp-ai/SamsLife/bin/Release/net7.0/publish/appsettings.json
-/home/nagendra/rp-ai/SamsLife/bin/Release/net7.0/publish/SamsLife.dll
-/home/nagendra/rp-ai/SamsLife/bin/Release/net7.0/publish/SamsLife.deps.json
-/home/nagendra/rp-ai/SamsLife/bin/Release/net7.0/publish/SamsLife.runtimeconfig.json
-/home/nagendra/rp-ai/SamsLife/bin/Release/net7.0/publish/SamsLife.pdb

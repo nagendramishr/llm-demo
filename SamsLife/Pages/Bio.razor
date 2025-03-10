@@ -2,6 +2,7 @@
 @using SamsLife.Data
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using System.Net.Http
+@using System.Text.Json
 @inject ProtectedLocalStorage BrowserStorage
 @inject IConfiguration Configuration
 
@@ -35,7 +36,9 @@
         <img src="circle.gif" alt="Loading..." />
     }
     else {
-        <textarea @bind="response" rows="10" cols="50"></textarea>
+        <div class="response">
+            @response
+        </div>
     }
 </div>
 
@@ -45,6 +48,17 @@
 }
 
 <style>
+    .response {
+        background-color: #f0f0f0;
+        padding: 10px;
+        border: thin black solid;
+        width: "80%";
+        height: auto; /* Make the response take the height of its content */
+        flex-grow: 1;
+        align-self: flex-start; /* Align the response at the top */
+        font-size: 32px;
+    }
+
     .queryparent {
         display: flex;
         flex-direction: row;
@@ -132,13 +146,33 @@
             var sf = new Query() { Text = queryText };
             string json = System.Text.Json.JsonSerializer.Serialize(sf);
 
-            var httpResponse = await sharedClient.PostAsync("api/getSummary", 
-                                                            new StringContent(json, 
-                                                            System.Text.Encoding.UTF8, 
-                                                            "application/json"));
+            Console.WriteLine ($"Making a request to {sharedClient.BaseAddress} with the following JSON: {json}");
+
+            var httpResponse =
+                await sharedClient.PostAsync("api/getSummary", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
+
+            Console.WriteLine ($"Response: {httpResponse.StatusCode}");
 
             httpResponse.EnsureSuccessStatusCode();
             response = await httpResponse.Content.ReadAsStringAsync();
+            // Parse the response to get the response text
+            // SAMPLE:
+            @* {"CreatedAt": "...","FinishReason": 0, "ContentTokenLogProbabilities": [], "RefusalTokenLogProbabilities": [], "Role": 2,
+  "Content": [{"Kind": 0, "Text": "...", "ImageUri": null, "ImageBytes": null,"ImageBytesMediaType": null,"ImageDetailLevel": null,"Refusal": null}],
+  "ToolCalls": [], "Refusal": null, "FunctionCall": null, "Id": "...",  "Model": "...", "SystemFingerprint": "...", 
+  "Usage": { "OutputTokenCount": 71, "InputTokenCount": 96, "TotalTokenCount": 167, "OutputTokenDetails": {"ReasoningTokenCount": 0,"AudioTokenCount": 0},
+    "InputTokenDetails": {"AudioTokenCount": 0,"CachedTokenCount": 0}}} *@
+
+            // Parse the response to get the response text
+            using (JsonDocument doc = JsonDocument.Parse(response))
+            {
+                JsonElement root = doc.RootElement;
+                JsonElement content = root.GetProperty("Content");
+                JsonElement firstContent = content[0];
+                response = firstContent.GetProperty("Text").GetString();
+            }
+            //var responseText = System.Text.Json.JsonSerializer.Deserialize<T>(response);
+            //response = responseText.Content[0].Text;
 
             isLoading = false;
             StateHasChanged();
