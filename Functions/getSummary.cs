@@ -31,7 +31,7 @@ namespace Functions
 
         [Function("getSummary")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req,
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
