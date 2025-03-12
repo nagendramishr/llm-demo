@@ -27,6 +27,49 @@
     <div class="queryBox">
         @queryText
     </div>
+    <div class="UsageBox">
+        <div class="Usage">
+            <b>LLM Usage Details:</b>
+        </div>
+        <div class="Usage">
+            @if (usage.Count > 0)
+            {
+                @foreach (KeyValuePair<string, string> kvp in usage)
+                {
+                    <div class="UsageItem">
+                        @if (kvp.Value.Contains("{")) {
+                            <div class="IndentedItems">
+                            @{
+                                var jo = JsonSerializer.Deserialize<Dictionary<string, object>>(kvp.Value);
+                                if (jo != null)
+                                {
+                                    <div class="IndentedHeading">@kvp.Key:</div>
+                                    foreach (var item in jo)
+                                    {
+                                        <div class="IndentedItem">
+                                            <span class="UsageItemKey">@item.Key:</span><span class="UsageItemValue"> @item.Value</span>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="UsageItemKey">@kvp.Key:</span><span class="UsageItemValue"> @kvp.Value</span>
+                                }
+                            }
+                            </div>
+                        }
+                        else {
+                            <span class="UsageItemKey">@kvp.Key:</span><span class="UsageItemValue"> @kvp.Value</span>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No usage data available.</p>
+            }
+        </div>
+    </div>
 </div>
 
 <div>
@@ -84,7 +127,7 @@
         justify-content: flex-start;
         align-items: flex-start;
         margin: 10px;
-        width: 800px;
+        width: 80%;
     }
 
     .querylist {
@@ -109,7 +152,7 @@
     .queryBox {
         padding: 10px;
         cursor: pointer;
-        width: 500px;
+        width: 80%;
         height: auto; /* Make the queryBox take the height of its content */
         flex-grow: 1;
         align-self: flex-start; /* Align the queryBox at the top */
@@ -117,6 +160,65 @@
     }
 
     .query:hover {
+        background-color: #e0e0e0;
+    }
+    .UsageBox {
+        display: flex;
+        flex-direction: column;
+        margin: 10px;
+        width: 20%;
+        height: auto; /* Make the usageBox take the height of its content */
+        flex-grow: 2;
+        align-self: flex-start; /* Align the usageBox at the top */
+    }
+
+    .usage {
+        background-color: #f0f0f0;
+        padding: 10px;
+        border: thin black solid;
+        width: 20%;
+        height: auto; /* Make the usage take the height of its content */
+        flex-grow: 2;
+        align-self: flex-start; /* Align the usage at the top */
+    }
+    .UsageItem {
+        border-bottom: thin black solid;
+        display: flex;
+        justify-content: space-between;
+        botder: thin black solid;
+        
+    }
+    .IndentedItems {
+        margin-left: 20px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        display: flex;
+        flex-direction: column;
+    }
+    .IndentedHeading {
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 20px;
+        margin-right: 10px;
+    }
+    .IndentedItem {
+        margin-left: 20px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .UsageItemKey {
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 40px;
+        margin-right: 10px;
+    }
+    .UsageItemValue {
+        font-size: 12px;
+        margin-left: 10px;
+    }
+    .usage:hover {
         background-color: #e0e0e0;
     }
 </style>
@@ -137,6 +239,8 @@
     bool errorOccurred = false;
     string errorMessage = "";
     string fontSize = "32px";
+
+    Dictionary<string, string> usage = new Dictionary<string, string>();
 
     bool isLoading = false;
     protected async Task OnAfterRenderAsync() // = On Page Load
@@ -188,9 +292,18 @@
                 JsonElement content = root.GetProperty("Content");
                 JsonElement firstContent = content[0];
                 response = firstContent.GetProperty("Text").GetString();
+
+                // copy usage out to a dictionary
+                JsonElement usageElement = root.GetProperty("Usage");
+                // iterate over the properties of the usage element
+                foreach (JsonProperty property in usageElement.EnumerateObject())
+                {
+                    // add each property to the usage dictionary
+                    usage[property.Name] = property.Value.ToString();
+                }
             }
-            //var responseText = System.Text.Json.JsonSerializer.Deserialize<T>(response);
-            //response = responseText.Content[0].Text;
+
+            
 
             isLoading = false;
             StateHasChanged();
