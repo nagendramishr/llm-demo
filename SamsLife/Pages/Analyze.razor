@@ -9,6 +9,15 @@
 
 <PageTitle>Index</PageTitle>
 
+<AuthorizeView>
+    <Authorized>
+        <p>Welcome, @context.User.Identity.Name!</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authenticated.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
 <h1>Analyze the Facts!</h1>
 
 
