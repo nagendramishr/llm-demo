@@ -12,6 +12,7 @@
 <AuthorizeView>
     <Authorized>
         <p>Welcome, @context.User.Identity.Name!</p>
+    <p><a href="MicrosoftIdentity/Account/SignIn?redirectUri=/analyze">Click here to sign in</a></p>
     </Authorized>
     <NotAuthorized>
         <p>You are not authenticated.</p>
