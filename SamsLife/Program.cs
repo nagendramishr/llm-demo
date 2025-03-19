@@ -8,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+builder.Services.AddAuthorization();
+
 //builder.Services.AddSingleton<WeatherForecastService>();
 //builder.Services.AddScoped<MyIdService>();
 builder.Services.AddDistributedMemoryCache();
@@ -19,7 +23,6 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -36,6 +39,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication(); // Ensure authentication middleware is added
+app.UseAuthorization();  // Ensure authorization middleware is added
 app.UseSession();
 
 app.MapBlazorHub();
