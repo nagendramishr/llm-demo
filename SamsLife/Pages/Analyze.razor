@@ -11,15 +11,6 @@
 
 <AuthorizeView>
     <Authorized>
-        <p>Welcome, @context.User.Identity.Name!</p>
-    </Authorized>
-    <NotAuthorized>
-        <p>You are not authenticated.</p>
-    <p><a href="/signin-oidc?redirectUri=/analyze">Click here to sign in</a></p>
-    <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=/analyze">another one</a></p>
-    </NotAuthorized>
-</AuthorizeView>
-
 <h1>Analyze the Facts!</h1>
 
 
@@ -109,6 +100,14 @@
     <p>@errorMessage</p>
 
 }
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authenticated.</p>
+    <p><a href="/signin-oidc?redirectUri=/analyze">Click here to sign in</a></p>
+    <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=/analyze">another one</a></p>
+    </NotAuthorized>
+</AuthorizeView>
+
 
 <style>
     .button {

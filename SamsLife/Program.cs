@@ -31,6 +31,18 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+{
+    options.Events = new OpenIdConnectEvents
+    {
+        OnRedirectToIdentityProvider = context =>
+        {
+            // Always return to /analyze after sign-in
+            context.ProtocolMessage.RedirectUri = "https://samslife2.azurewebsites.net/analyze";
+            return Task.CompletedTask;
+        }
+    };
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
