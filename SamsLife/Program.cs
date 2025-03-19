@@ -53,7 +53,5 @@ app.UseAuthentication(); // Ensure authentication middleware is added
 app.UseAuthorization();  // Ensure authorization middleware is added
 app.UseSession();
 
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
 
 app.Run();
