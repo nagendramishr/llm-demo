@@ -44,6 +44,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.MapControllers(); 
+app.MapRazorPages(); 
+app.MapBlazorHub(); 
+app.MapFallbackToPage("/_Host");
+
 app.UseAuthentication(); // Ensure authentication middleware is added
 app.UseAuthorization();  // Ensure authorization middleware is added
 app.UseSession();
