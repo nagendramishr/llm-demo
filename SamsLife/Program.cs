@@ -19,6 +19,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
