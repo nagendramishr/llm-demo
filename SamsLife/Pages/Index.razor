@@ -4,16 +4,17 @@
 @using System.Net.Http
 @inject ProtectedLocalStorage BrowserStorage
 @inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
 
 <PageTitle>Index</PageTitle>
 
-<h1>Sam's Life!</h1>
+<h1>Fact Analyzer!</h1>
 
 @if (isReady) {
 
-    <p>This is the fact analyzer.  You the audience will help us by providing us with facts align-items instructed by the presenter. Then, to showcase the power of generative AI, we'll let OpenAI analyzer the facts that You have created.</p>
+    <p>In this interactive session, you're a key part of our discovery process. As our presenter guides you, please share the facts you know by entering them below. Once submitted, OpenAI’s generative AI will analyze your input to reveal insightful connections and patterns. </p>
 
-    <p>Type in a fact below:</p> 
+    <p>Let's see the power of collaborative knowledge in action. <b>Type in a fact below:</b></p>
 
     <p>@status</p>
 
@@ -30,6 +31,13 @@ else if (isDoneSubmitting) {
 
     <p>Click continue to enter another fact</p>
     <div class="button-like"  @onclick="@(async () => await Reset())"> Continue</div>
+}
+
+@{
+    var url = NavigationManager?.Uri;
+
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@url" alt="QR Code" />
+
 }
 @if (errorOccurred) {
     <p>@errorMessage</p>

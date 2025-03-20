@@ -37,8 +37,9 @@
     <div class="querylist" >
         @foreach (KeyValuePair<string, string> query in queries)
         {
-            <div class="query" @onclick="@( async() => await runQuery(query.Value))">
+            <div class="query" @onclick="@( async() => await runQuery(query.Value))"  >
                 @query.Key
+                <span class="queryHText">@query.Value</span>
             </div>
         }
     </div>
@@ -168,6 +169,31 @@
         cursor: pointer;
         border: thin black solid;
         width: 100%;
+    }
+
+    .queryHText {
+        visibility: hidden;
+        width: 160px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 4px;
+        padding: 6px;
+        
+        /* Position the tooltip above the button */
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        
+        /* Add a fade-in effect */
+        transition: opacity 0.3s;
+    }
+
+    .query:hover .queryHText {
+        visibility: visible;
+        opacity: 1;
     }
 
     .queryText {
