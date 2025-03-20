@@ -12,9 +12,8 @@
 <AuthorizeView>
     <Authorized>
         @{
-            bool hasAccess = false;
-        
-            users = Configuration.GetSection("AllowedUsers").Value.Split(",").ToList();
+            users = Configuration.GetSection("AllowedUsers")?.Value.Split(",").ToList() ?? new List<string>();
+            hasAccess = false;
 
             var user = context?.User?.Identity?.Name ?? "";
             if (!string.IsNullOrEmpty(user))
@@ -26,6 +25,11 @@
                     {
                         hasAccess = true;
                         break;
+                    } else 
+                    {
+                        <p> @usr
+                             !=
+                              @user </p>
                     }
                 }
 
@@ -33,97 +37,97 @@
                 <p>Sorry, you do not have access to this page.</p>
             }
 
-if (hasAccess)
-{
-    <h1>Analyze the Facts!</h1>
-
-    <p>Let's anayze the facts's we know solid far.  Although we could let you try your own hand about this summary, we have a few 
-        pre-defined ways to summarize them.  Select one of the following:</p>
-
-    <h3>Query:</h3>
-    <div class="queryparent">
-        <div class="querylist" >
-            @foreach (KeyValuePair<string, string> query in queries)
+            if (hasAccess)
             {
-                <div class="query" @onclick="@( async() => await runQuery(query.Value))"  >
-                    @query.Key
-                    <span class="queryHText">@query.Value</span>
-                </div>
-            }
-        </div>
-        <div class="queryBox">
-            @queryText
-        </div>
-        <div class="UsageBox">
-            <div class="Usage">
-                <b>LLM Usage Details:</b>
-            </div>
-            <div class="Usage">
-                @if (usage.Count > 0)
-                {
-                    @foreach (KeyValuePair<string, string> kvp in usage)
-                    {
-                        <div class="UsageItem">
-                            @if (kvp.Value.Contains("{")) {
-                                <div class="IndentedItems">
-                                @{
-                                    var jo = JsonSerializer.Deserialize<Dictionary<string, object>>(kvp.Value);
-                                    if (jo != null)
-                                    {
-                                        <div class="IndentedHeading">@kvp.Key:</div>
-                                        foreach (var item in jo)
-                                        {
-                                            <div class="IndentedItem">
-                                                <span class="UsageItemKey">@item.Key:</span><span class="UsageItemValue"> @item.Value</span>
+                <h1>Analyze the Facts!</h1>
+
+                <p>Let's anayze the facts's we know solid far.  Although we could let you try your own hand about this summary, we have a few 
+                    pre-defined ways to summarize them.  Select one of the following:</p>
+
+                <h3>Query:</h3>
+                <div class="queryparent">
+                    <div class="querylist" >
+                        @foreach (KeyValuePair<string, string> query in queries)
+                        {
+                            <div class="query" @onclick="@( async() => await runQuery(query.Value))"  >
+                                @query.Key
+                                <span class="queryHText">@query.Value</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="queryBox">
+                        @queryText
+                    </div>
+                    <div class="UsageBox">
+                        <div class="Usage">
+                            <b>LLM Usage Details:</b>
+                        </div>
+                        <div class="Usage">
+                            @if (usage.Count > 0)
+                            {
+                                @foreach (KeyValuePair<string, string> kvp in usage)
+                                {
+                                    <div class="UsageItem">
+                                        @if (kvp.Value.Contains("{")) {
+                                            <div class="IndentedItems">
+                                            @{
+                                                var jo = JsonSerializer.Deserialize<Dictionary<string, object>>(kvp.Value);
+                                                if (jo != null)
+                                                {
+                                                    <div class="IndentedHeading">@kvp.Key:</div>
+                                                    foreach (var item in jo)
+                                                    {
+                                                        <div class="IndentedItem">
+                                                            <span class="UsageItemKey">@item.Key:</span><span class="UsageItemValue"> @item.Value</span>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="UsageItemKey">@kvp.Key:</span><span class="UsageItemValue"> @kvp.Value</span>
+                                                }
+                                            }
                                             </div>
                                         }
-                                    }
-                                    else
-                                    {
-                                        <span class="UsageItemKey">@kvp.Key:</span><span class="UsageItemValue"> @kvp.Value</span>
-                                    }
+                                        else {
+                                            <span class="UsageItemKey">@kvp.Key:</span><span class="UsageItemValue"> @kvp.Value</span>
+                                        }
+                                    </div>
                                 }
-                                </div>
                             }
-                            else {
-                                <span class="UsageItemKey">@kvp.Key:</span><span class="UsageItemValue"> @kvp.Value</span>
+                            else
+                            {
+                                <p>No usage data available.</p>
                             }
                         </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3>Response:</h3>  
+                </div>
+                <div>
+                    @if (isLoading) {
+                        <img src="circle.gif" alt="Loading..." />
                     }
-                }
-                else
-                {
-                    <p>No usage data available.</p>
-                }
-            </div>
-        </div>
-    </div>
+                    else {
+                        <hr>
+                        <div> Font-Size: 
+                            <span class="button" @onclick="@( async() => {fontSize="12px";} )">Small</span> 
+                            <span class="button" @onclick="@( async() => {fontSize="24px";} )">Medium</span>
+                            <span class="button" @onclick="@( async() => {fontSize="32px";} )">Large</span>
+                        </div>
+                        <hr>
+                        <div class="response" style="font-size: @fontSize;">
+                            @response
+                        </div>
+                    }
+                </div>
 
-    <div>
-        <h3>Response:</h3>  
-    </div>
-    <div>
-        @if (isLoading) {
-            <img src="circle.gif" alt="Loading..." />
-        }
-        else {
-            <hr>
-            <div> Font-Size: 
-                <span class="button" @onclick="@( async() => {fontSize="12px";} )">Small</span> 
-                <span class="button" @onclick="@( async() => {fontSize="24px";} )">Medium</span>
-                <span class="button" @onclick="@( async() => {fontSize="32px";} )">Large</span>
-            </div>
-            <hr>
-            <div class="response" style="font-size: @fontSize;">
-                @response
-            </div>
-        }
-    </div>
-
-    @if (errorOccurred) {
-        <p>@errorMessage</p>
-    }
-}
+                @if (errorOccurred) {
+                    <p>@errorMessage</p>
+                }
+            }
 }
     </Authorized>
     <NotAuthorized>
@@ -284,6 +288,7 @@ if (hasAccess)
 </style>
 
 @code {
+    bool hasAccess = false;
     List<string> users = new List<string>();
     Dictionary<string, string> queries = new Dictionary<string, string>
     {
