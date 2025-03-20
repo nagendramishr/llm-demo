@@ -22,8 +22,7 @@
                 foreach (var usr in users)
                 {
                     <p>Checking user: @usr against @user</p>
-
-                    if (usr == context?.User?.Identity?.Name)
+                    if (usr == user)
                     {
                         hasAccess = true;
                         break;
