@@ -21,7 +21,7 @@
                 foreach (var usr in users)
                 {
                     <p>Checking user: @usr against @user</p>
-                    if (usr == user)
+                    if (usr.ToString().Trim() == user.Trim())
                     {
                         hasAccess = true;
                         break;
