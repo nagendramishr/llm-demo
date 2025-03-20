@@ -11,6 +11,21 @@
 
 <AuthorizeView>
     <Authorized>
+        @{
+            bool hasAccess = false;
+
+            var user = context?.User?.Identity?.Name ?? "";
+            if (!string.IsNullOrEmpty(user))
+            {
+                hasAccess = true;
+                <h2>Welcome, @user!</h2>
+            } else {
+                <p>Sorry, you do not have access to this page.</p>
+            }
+        }
+
+@if (hasAccess)
+{
 <h1>Analyze the Facts!</h1>
 
 
@@ -100,11 +115,11 @@
     <p>@errorMessage</p>
 
 }
+}
     </Authorized>
     <NotAuthorized>
         <p>You are not authenticated.</p>
-    <p><a href="/signin-oidc?redirectUri=/analyze">Click here to sign in</a></p>
-    <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=/analyze">another one</a></p>
+        <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=/analyze">Login</a></p>
     </NotAuthorized>
 </AuthorizeView>
 
