@@ -17,8 +17,8 @@
             var user = context?.User?.Identity?.Name ?? "";
             if (!string.IsNullOrEmpty(user))
             {
+                if (users.Contains(user))
                 hasAccess = true;
-                <h2>Welcome, @user!</h2>
             } else {
                 <p>Sorry, you do not have access to this page.</p>
             }
@@ -276,6 +276,7 @@
 </style>
 
 @code {
+    List<string> users = new List<string>();
     Dictionary<string, string> queries = new Dictionary<string, string>
     {
         { "Summary", "Use the facts below to create a summary of Sam's life in a compact way without sacrificing readability." +
@@ -297,6 +298,7 @@
     bool isLoading = false;
     protected async Task OnAfterRenderAsync() // = On Page Load
     {   
+        users = Configuration.GetSection("Users")?.Get<List<string>>() ?? new List<string>();
     }
     private static HttpClient? sharedClient;    
     private async Task runQuery( string inputString)
