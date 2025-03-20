@@ -14,11 +14,21 @@
         @{
             bool hasAccess = false;
 
+
             var user = context?.User?.Identity?.Name ?? "";
             if (!string.IsNullOrEmpty(user))
             {
-                if (users.Contains(user))
-                hasAccess = true;
+                foreach (var usr in users)
+                {
+                    <p>Checking user: @usr against @user</p>
+
+                    if (usr == context?.User?.Identity?.Name)
+                    {
+                        hasAccess = true;
+                        break;
+                    }
+                }
+
             } else {
                 <p>Sorry, you do not have access to this page.</p>
             }
