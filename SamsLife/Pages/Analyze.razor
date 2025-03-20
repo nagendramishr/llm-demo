@@ -13,7 +13,8 @@
     <Authorized>
         @{
             bool hasAccess = false;
-
+        
+            users = Configuration.GetSection("Users")?.Get<List<string>>() ?? new List<string>();
 
             var user = context?.User?.Identity?.Name ?? "";
             if (!string.IsNullOrEmpty(user))
