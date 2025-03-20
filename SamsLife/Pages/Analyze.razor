@@ -20,16 +20,10 @@
             {
                 foreach (var usr in users)
                 {
-                    <p>Checking user: @usr against @user</p>
                     if (usr.ToString().Trim() == user.Trim())
                     {
                         hasAccess = true;
                         break;
-                    } else 
-                    {
-                        <p> @usr
-                             !=
-                              @user </p>
                     }
                 }
 
