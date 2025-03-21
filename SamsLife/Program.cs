@@ -43,12 +43,6 @@ builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.Authentic
         }
     };
 });
-
-builder.Services.AddAntiforgery(options =>
-{
-    options.SuppressXFrameOptionsHeader = true; // Optional: Suppress X-Frame-Options header
-});
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -67,7 +61,7 @@ app.MapRazorPages();
 app.MapBlazorHub(); 
 app.MapFallbackToPage("/_Host");
 
-app.UseAuthentication();
+app.UseAuthentication(); 
 app.UseAuthorization();  
 app.UseSession();
 
