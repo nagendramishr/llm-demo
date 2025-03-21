@@ -76,7 +76,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    KnownNetworks = { }, // <-- explicitly clear these
+    KnownProxies = { }   // <-- explicitly clear known proxies
+
 });
 
 app.UseHttpsRedirection();
