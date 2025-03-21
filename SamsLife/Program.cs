@@ -84,11 +84,11 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 });
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication(); 
+app.UseHttpsRedirection();
 app.UseAuthorization();  
 app.UseSession();
 
