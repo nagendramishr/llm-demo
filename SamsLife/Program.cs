@@ -40,7 +40,7 @@ builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.Authentic
         {
             // Always return to /analyze after sign-in
             //context.ProtocolMessage.RedirectUri = context.ProtocolMessage.RedirectUri ?? "https://samslife2.azurewebsites.net/analyze";
-            context.ProtocolMessage.RedirectUri = "https://samslife2.azurewebsites.net/analyze";
+            context.ProtocolMessage.RedirectUri = "https://samslife2.azurewebsites.net/Landing";
             return Task.CompletedTask;
         }
     };
