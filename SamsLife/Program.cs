@@ -38,8 +38,8 @@ builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.Authentic
         OnRedirectToIdentityProvider = context =>
         {
             // Always return to /analyze after sign-in
-            context.ProtocolMessage.RedirectUri = context.ProtocolMessage.RedirectUri ?? "https://samslife2.azurewebsites.net/analyze";
-            //context.ProtocolMessage.RedirectUri = "https://samslife2.azurewebsites.net/analyze";
+            //context.ProtocolMessage.RedirectUri = context.ProtocolMessage.RedirectUri ?? "https://samslife2.azurewebsites.net/analyze";
+            context.ProtocolMessage.RedirectUri = "https://samslife2.azurewebsites.net/analyze";
             return Task.CompletedTask;
         }
     };
