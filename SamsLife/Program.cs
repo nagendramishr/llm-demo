@@ -49,14 +49,14 @@ builder.Services.AddAntiforgery(options =>
 {
     options.Cookie.Name = ".AspNetCore.Antiforgery";
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SameSite = SameSiteMode.None;
 });
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
-    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SameSite = SameSiteMode.None;
 });
 var app = builder.Build();
 
