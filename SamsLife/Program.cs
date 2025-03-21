@@ -38,9 +38,16 @@ builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.Authentic
     {
         OnRedirectToIdentityProvider = context =>
         {
-            // Always return to /analyze after sign-in
-            //context.ProtocolMessage.RedirectUri = context.ProtocolMessage.RedirectUri ?? "https://samslife2.azurewebsites.net/analyze";
-            context.ProtocolMessage.RedirectUri = "https://samslife2.azurewebsites.net/Landing";
+            // Check if the user is navigating to /analyze
+            var path = context.Request.Path.Value ?? "";
+
+            if (path.Equals("/analyze", StringComparison.OrdinalIgnoreCase))
+            {
+                // Only redirect to /Landing if user came from /analyze
+                context.ProtocolMessage.RedirectUri =
+                    "https://samslife2.azurewebsites.net/Landing";
+            }
+
             return Task.CompletedTask;
         }
     };
