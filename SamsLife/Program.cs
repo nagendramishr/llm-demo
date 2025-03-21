@@ -54,11 +54,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SameSite = SameSiteMode.Strict; // Prevents the cookie from being sent with cross-site requests
 });
 
-builder.Services.AddAntiforgery(options =>
-{
-    options.Cookie.Name = ".AspNetCore.Antiforgery"; // Name of the antiforgery cookie
-    options.HeaderName = "X-XSRF-TOKEN"; // Header name for antiforgery token
-});
+// builder.Services.AddAntiforgery(options =>
+// {
+//     options.Cookie.Name = ".AspNetCore.Antiforgery"; // Name of the antiforgery cookie
+//     options.HeaderName = "X-XSRF-TOKEN"; // Header name for antiforgery token
+//});
+builder.Services.AddAntiforgery();
 
 var app = builder.Build();
 
