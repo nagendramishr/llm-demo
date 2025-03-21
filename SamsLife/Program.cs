@@ -43,6 +43,23 @@ builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.Authentic
         }
     };
 });
+
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensures cookies are only sent over HTTPS
+    options.Cookie.HttpOnly = true; // Prevents client-side scripts from accessing the cookie
+    options.Cookie.SameSite = SameSiteMode.Strict; // Prevents the cookie from being sent with cross-site requests
+});
+
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.Name = ".AspNetCore.Antiforgery"; // Name of the antiforgery cookie
+    options.HeaderName = "X-XSRF-TOKEN"; // Header name for antiforgery token
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -63,7 +80,6 @@ app.MapFallbackToPage("/_Host");
 
 app.UseAuthentication();
 app.UseAuthorization();  
-app.UseAntiforgery();
 app.UseSession();
 
 
