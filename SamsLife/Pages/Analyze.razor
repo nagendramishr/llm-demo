@@ -296,7 +296,9 @@
         { "Analyze", "Using the facts below, analyze the character's life and identify any patterns or trends.  Use the scientific format." +format},
         { "Expound", "Using the facts below, suggest activities that fit the trend but would fit in the missing gaps." +format },
         { "Predict", "Using the facts below, predict what the character's life will be like in the future.  Use a story telling format." +format },
-        { "Q&A", "Find the questions in the facts below. Group them into the fewest categories possible but still making sense. "+ 
+        { "Quiz", "Using the facts below, create a list of quiz questions in the fill in the blank format. " +
+                "Give the answers at the end but spelled backwards. " +format},
+            { "Q&A", "Using only the questions in the facts list below, group them into the fewest categories possible but still making sense. "+ 
                 "Generate a clear and complete response to all the questions in format that easily flows from idea to idea. Include an intro and summary." + format}
     };
     string queryText = "< Select a query on the left to analyze. >";
@@ -342,7 +344,7 @@
             Console.WriteLine ($"Response: {httpResponse.StatusCode}");
 
             httpResponse.EnsureSuccessStatusCode();
-            response = await httpResponse.Content.ReadAsStringAsync();
+            response = (await httpResponse.Content.ReadAsStringAsync()).Replace("```html", "");
             // Parse the response to get the response text
             // SAMPLE:
             @* {"CreatedAt": "...","FinishReason": 0, "ContentTokenLogProbabilities": [], "RefusalTokenLogProbabilities": [], "Role": 2,
