@@ -45,7 +45,7 @@
                         {
                             <div class="query" @onclick="@( async() => await runQuery(query.Value))"  >
                                 @query.Key
-                                <span class="queryHText">@query.Value</span>
+                                <span class="queryHText">@((MarkupString) query.Value)</span>
                             </div>
                         }
                     </div>
@@ -284,18 +284,20 @@
 @code {
     bool hasAccess = false;
     List<string> users = new List<string>();
+    static string format=" Return the response in HTML format where the content can be copied into a div tag.";
     Dictionary<string, string> queries = new Dictionary<string, string>
     {
         { "Summary", "Use the facts below to create a summary of the character's life in a compact way without sacrificing readability." +
                 "Do not add any additional information or context, but if something doesn't make sense, add a commical commentary. " +
-                "Just present the facts as if this was a biography about the character's life." },
-        { "Critique", "Using the facts below, identify facts that dot't fit.  Explain why each one doesn't quite fit, illustrating it if neccessary in a comedic way.  Consolidate your response in the form of a critique." },
-        { "Compare", "Using the facts below, compare the character's life to that of a famous person.  Use the same format as a biography." },
-        { "Analyze", "Using the facts below, analyze the character's life and identify any patterns or trends.  Use the scientific format." },
-        { "Expound", "Using the facts below, suggest activities that fit the trend but would fit in the missing gaps." },
-        { "Predict", "Using the facts below, predict what the character's life will be like in the future.  Use a story telling format." },
+                "Just present the facts as if this was a biography about the character's life." + format},
+        { "Critique", "Using the facts below, identify facts that dot't fit.  Explain why each one doesn't quite fit, illustrating it "+
+                "if neccessary in a comedic way.  Consolidate your response in the form of a critique." +format},
+        { "Compare", "Using the facts below, compare the character's life to that of a famous person.  Use the same format as a biography." +format},
+        { "Analyze", "Using the facts below, analyze the character's life and identify any patterns or trends.  Use the scientific format." +format},
+        { "Expound", "Using the facts below, suggest activities that fit the trend but would fit in the missing gaps." +format },
+        { "Predict", "Using the facts below, predict what the character's life will be like in the future.  Use a story telling format." +format },
         { "Q&A", "Find the questions in the facts below. Group them into the fewest categories possible but still making sense. "+ 
-                "Generate a clear and complete response to all the questions in format that easily flows from idea to idea. Include an intro and summary. "}
+                "Generate a clear and complete response to all the questions in format that easily flows from idea to idea. Include an intro and summary." + format}
     };
     string queryText = "< Select a query on the left to analyze. >";
     string response = "";
