@@ -344,8 +344,7 @@
             Console.WriteLine ($"Response: {httpResponse.StatusCode}");
 
             httpResponse.EnsureSuccessStatusCode();
-            var ca = (await httpResponse.Content.ReadAsStringAsync()).Trim();
-            response = ca.Substring(7); // remove the BOM:  "```html"
+            response = await httpResponse.Content.ReadAsStringAsync();
 
             // Parse the response to get the response text
             // SAMPLE:
@@ -361,7 +360,7 @@
                 JsonElement root = doc.RootElement;
                 JsonElement content = root.GetProperty("Content");
                 JsonElement firstContent = content[0];
-                response = firstContent.GetProperty("Text").GetString();
+                response = firstContent.GetProperty("Text").GetString().Trim().Substring(7); // remove the BOM:  "```html"
 
                 // copy usage out to a dictionary
                 JsonElement usageElement = root.GetProperty("Usage");
