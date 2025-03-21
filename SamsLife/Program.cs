@@ -52,6 +52,7 @@ builder.Services.AddAntiforgery(options =>
     options.HeaderName = "X-XSRF-TOKEN";
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.Path = "/"; // <-- Explicitly set cookie path
     //options.Cookie.Domain = "samslife2.azurewebsites.net"; // <-- Add this line explicitly
 
 });
@@ -61,6 +62,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.Path = "/"; // <-- Explicitly set cookie path
     //options.Cookie.Domain = "samslife2.azurewebsites.net"; // <-- Add this line explicitly
 });
 var app = builder.Build();
