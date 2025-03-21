@@ -38,10 +38,25 @@ builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.Authentic
         OnRedirectToIdentityProvider = context =>
         {
             // Always return to /analyze after sign-in
-            context.ProtocolMessage.RedirectUri = "https://samslife2.azurewebsites.net/analyze";
+            context.ProtocolMessage.RedirectUri = context.ProtocolMessage.RedirectUri ?? "https://samslife2.azurewebsites.net/analyze";
+            //context.ProtocolMessage.RedirectUri = "https://samslife2.azurewebsites.net/analyze";
             return Task.CompletedTask;
         }
     };
+});
+
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.Name = ".AspNetCore.Antiforgery";
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
 });
 var app = builder.Build();
 
@@ -56,14 +71,14 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.MapControllers(); 
-app.MapRazorPages(); 
-app.MapBlazorHub(); 
-app.MapFallbackToPage("/_Host");
 
 app.UseAuthentication(); 
 app.UseAuthorization();  
 app.UseSession();
 
+app.MapControllers(); 
+app.MapRazorPages(); 
+app.MapBlazorHub(); 
+app.MapFallbackToPage("/_Host");
 
 app.Run();
