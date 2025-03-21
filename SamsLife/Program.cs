@@ -52,6 +52,8 @@ builder.Services.AddAntiforgery(options =>
     options.HeaderName = "X-XSRF-TOKEN";
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.Domain = "samslife2.azurewebsites.net"; // <-- Add this line explicitly
+
 });
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -59,6 +61,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.Domain = "samslife2.azurewebsites.net"; // <-- Add this line explicitly
 });
 var app = builder.Build();
 
@@ -70,10 +73,12 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
