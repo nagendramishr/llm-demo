@@ -344,8 +344,9 @@
             Console.WriteLine ($"Response: {httpResponse.StatusCode}");
 
             httpResponse.EnsureSuccessStatusCode();
-            var ca = (await httpResponse.Content.ReadAsStringAsync()).Trim().ToCharArray();
-            response = new String(ca, 7, ca.Length - 7); // remove the BOM
+            var ca = (await httpResponse.Content.ReadAsStringAsync()).Trim();
+            response = ca.Substring(7); // remove the BOM:  "```html"
+
             // Parse the response to get the response text
             // SAMPLE:
             @* {"CreatedAt": "...","FinishReason": 0, "ContentTokenLogProbabilities": [], "RefusalTokenLogProbabilities": [], "Role": 2,
