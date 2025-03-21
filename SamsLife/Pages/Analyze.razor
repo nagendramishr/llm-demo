@@ -45,7 +45,7 @@
                         {
                             <div class="query" @onclick="@( async() => await runQuery(query.Value))"  >
                                 @query.Key
-                                <span class="queryHText">@((MarkupString) query.Value)</span>
+                                <span class="queryHText">query.Value</span>
                             </div>
                         }
                     </div>
@@ -113,7 +113,7 @@
                         </div>
                         <hr>
                         <div class="response" style="font-size: @fontSize;">
-                            @response
+                            @((MarkupString) response)
                         </div>
                     }
                 </div>
@@ -284,7 +284,7 @@
 @code {
     bool hasAccess = false;
     List<string> users = new List<string>();
-    static string format=" Return the response in HTML format where the content can be copied into a div tag.";
+    static string format=" Return the response in HTML format where the content can be copied into a span tag.";
     Dictionary<string, string> queries = new Dictionary<string, string>
     {
         { "Summary", "Use the facts below to create a summary of the character's life in a compact way without sacrificing readability." +
