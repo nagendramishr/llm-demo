@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Company.Function
+namespace Functions
 {
     public class resetDB
     {
@@ -15,27 +15,45 @@ namespace Company.Function
         }
 
         [Function("resetDB")]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequest req,
-                    [CosmosDBInput(
+
+        public MultiResponse2 Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequest req,
+            [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
                 SqlQuery = "select * FROM c",
-                Connection = "dbstr")] IEnumerable<SamFact> allFacts,
-                    [CosmosDBOutput(
-                databaseName: "%CosmosDb%",
-                containerName: "%CosmosContainer%",
-                Connection = "dbstr")] IAsyncCollector<SamFact> outFacts)
-
+                Connection = "dbstr")] IEnumerable<SamFact> allFacts)
         {
+            MultiResponse2 mr = new MultiResponse2();
+
             int count = 0;
             foreach (var fact in allFacts)
             {
-                fact.delete = true;
-                await outFacts.AddAsync(fact);
+                fact.Delete = true;
+                mr.records.Add(fact);
                 count++;
             }
 
-            return new OkObjectResult($"{count} item(s) updated with delete=true.");
+            mr.Result= new OkObjectResult($"{count} item(s) updated with delete=true.");
+            return mr;
         }
+    }
+
+    public class MultiResponse2
+    {
+        [HttpResult]
+        public IActionResult Result { get; set; } = new OkObjectResult("No records found.");
+
+        [CosmosDBOutput(
+            databaseName: "%CosmosDb%",
+            containerName: "%CosmosContainer%",
+            Connection = "dbstr")] 
+        public List<object> records  {get; set; } = new List<object>();
+
+        public MultiResponse2()
+        {
+            Result = new OkObjectResult("No records found.");
+            records = new List<object>();
+        }
+        
     }
 }

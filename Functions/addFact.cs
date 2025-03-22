@@ -55,5 +55,6 @@ namespace Functions
         [QueueOutput("output-queue", Connection = "Queue")]
         public string[] Messages { get; set; }
         [HttpResult]
-        public IActionResult Result { get; set; }    }
+        public IActionResult Result { get; set; }
+    }
 }
