@@ -99,7 +99,7 @@ namespace Functions
             // Create chat completion options  
             var options = new ChatCompletionOptions{  
                 Temperature = (float)0.7,  
-                MaxOutputTokenCount = 800,  
+                MaxOutputTokenCount = 1200,
                 
                 TopP=(float)0.95,  
                 FrequencyPenalty=(float)0,  

@@ -11,6 +11,9 @@ namespace Functions
 
         [JsonPropertyName("id")]
         public string id { get; set; }
+
+        [JsonPropertyName("Delete")]
+        public bool Delete { get; set; } = false;
         public SamFact()
         {
             id= Guid.NewGuid().ToString();
