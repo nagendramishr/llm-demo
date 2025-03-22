@@ -296,7 +296,10 @@
         { "Analyze", "Using the facts below, analyze the character's life and identify any patterns or trends.  Use the scientific format." +format},
         { "Expound", "Using the facts below, suggest activities that fit the trend but would fit in the missing gaps." +format },
         { "Predict", "Using the facts below, predict what the character's life will be like in the future.  Use a story telling format." +format },
-        { "Quiz", "Using the facts below, create a list of quiz questions in the fill in the blank format. " +
+        { "Review", "Using the following product reviews, create an overall rating of the product. Describe the best and worst features of the product. " +format},
+        { "Picture", "Using the facts below, create a prompt that can be used to generate a picture about the characters life.  Be as vivid as possible." +format },
+        { "Debate", "Using the facts below, create a debate between two people about the character's life.  Use a script format." +format },
+        { "Quiz", "Using the facts below, create a list of quiz questions in the fill in the blank format where the blank is in the sentence. " +
                 "Give all the answers at the end of the quiz but spelled backwards. " +format},
             { "Q&A", "Using only the questions in the facts list below, group them into the fewest categories possible but still making sense. "+ 
                 "Generate a clear and complete response to all the questions in format that easily flows from idea to idea. Include an intro and summary." + format}
@@ -361,6 +364,7 @@
                 JsonElement content = root.GetProperty("Content");
                 JsonElement firstContent = content[0];
                 response = firstContent.GetProperty("Text").GetString().Trim().Substring(7); // remove the BOM:  "```html"
+                response = response.Substring(0, response.Length - 3); // remove the closing "```"
 
                 // copy usage out to a dictionary
                 JsonElement usageElement = root.GetProperty("Usage");
