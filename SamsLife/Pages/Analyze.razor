@@ -165,8 +165,8 @@
 
     .querylist {
         display: flex;
-        flex-direction: column;
         margin: 10px;
+        flex-wrap: wrap;
     }
 
     .query {
@@ -175,6 +175,8 @@
         cursor: pointer;
         border: thin black solid;
         width: 100%;
+        flex-basis: 50%;
+        box-sizing: border-box;
     }
 
     .queryHText {
