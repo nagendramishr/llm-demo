@@ -5,7 +5,11 @@
 @using System.Text.Json
 @inject ProtectedLocalStorage BrowserStorage
 @inject IConfiguration Configuration
+@attribute [Authorize]
 
+<AuthorizeView>
+    <Authorized>
+        @{
 <PageTitle>List</PageTitle>
 
 <h1>All The Facts</h1>
@@ -74,6 +78,12 @@ else if (isLoading) {
     background-color: #0056b3;
 }
 </style>
+        </Authorized>
+        <NotAuthorized>
+            <h3>Not Authorized</h3>
+            <p>You are not authorized to view this page.</p>
+        </NotAuthorized>
+    </AuthorizeView>
 
 @code {
 
