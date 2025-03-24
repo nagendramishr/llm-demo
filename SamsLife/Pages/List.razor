@@ -35,7 +35,13 @@ else if (isLoading) {
     <p>@errorMessage</p>
 
 }
-
+}
+        </Authorized>
+        <NotAuthorized>
+            <h3>Not Authorized</h3>
+            <p>You are not authorized to view this page.</p>
+        </NotAuthorized>
+    </AuthorizeView>
 <style>
 .list {
     margin-top: 40px;
@@ -78,12 +84,6 @@ else if (isLoading) {
     background-color: #0056b3;
 }
 </style>
-        </Authorized>
-        <NotAuthorized>
-            <h3>Not Authorized</h3>
-            <p>You are not authorized to view this page.</p>
-        </NotAuthorized>
-    </AuthorizeView>
 
 @code {
 
