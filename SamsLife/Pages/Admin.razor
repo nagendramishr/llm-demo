@@ -1,0 +1,34 @@
+@page "/admin"
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Admin Panel</h3>
+
+        <button class="btn btn-danger" @onclick="ResetDatabase">Reset Database</button>
+
+        <p>@statusMessage</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authenticated.</p>
+        <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=%2Fanalyze">Login</a></p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private string statusMessage = string.Empty;
+
+    private async Task ResetDatabase()
+    {
+        try
+        {
+            // Simulate a database reset operation
+            await Task.Delay(1000); // Replace this with your actual database reset logic
+            statusMessage = "Database has been successfully reset.";
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+}
