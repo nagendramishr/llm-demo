@@ -1,4 +1,8 @@
 @page "/admin"
+@using SamsLife.Data
+@inject IConfiguration Configuration
+@using System.Net.Http
+@using System.Text.Json
 @attribute [Authorize]
 
 <AuthorizeView>
@@ -17,11 +21,22 @@
 
 @code {
     private string statusMessage = string.Empty;
+    private static HttpClient? sharedClient;    
 
     private async Task ResetDatabase()
     {
         try
         {
+            if (sharedClient == null)
+            {
+                var SamFuncHost = Configuration["SamFunction:Hostname"];
+                var SamAuth = Configuration["SamFunction:FunctionKey"];
+
+                sharedClient = new HttpClient();
+                sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
+                sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
+            }
+
             // Simulate a database reset operation
             await Task.Delay(1000); // Replace this with your actual database reset logic
             statusMessage = "Database has been successfully reset.";
