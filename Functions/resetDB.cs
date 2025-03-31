@@ -33,6 +33,8 @@ namespace Functions
                 count++;
             }
 
+            _logger.LogInformation($"updating: {mr.records.Count()} ");
+
             mr.Result= new OkObjectResult($"{count} item(s) updated with delete=true.");
             return mr;
         }
