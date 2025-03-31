@@ -40,6 +40,12 @@
             var httpResponse =
                 await sharedClient.GetAsync("api/resetDB");
 
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                statusMessage = $"Error: {httpResponse.StatusCode}";
+                return;
+            }
+
             // Simulate a database reset operation
             await Task.Delay(1000); // Replace this with your actual database reset logic
             statusMessage = "Database has been successfully reset.";
