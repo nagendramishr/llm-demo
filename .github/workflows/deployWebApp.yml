@@ -90,3 +90,4 @@ jobs:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.SAMWEBPROFILE }}
           package: '.'
+          removeAdditionalFiles: true
