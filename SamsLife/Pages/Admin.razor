@@ -37,6 +37,9 @@
                 sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
             }
 
+            var httpResponse =
+                await sharedClient.GetAsync("api/resetDB");
+
             // Simulate a database reset operation
             await Task.Delay(1000); // Replace this with your actual database reset logic
             statusMessage = "Database has been successfully reset.";
