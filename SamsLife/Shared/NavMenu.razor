@@ -21,12 +21,20 @@
             <NavLink class="nav-link" href="/analyze" Match="NavLinkMatch.All">
                 <span class="oi oi-star" aria-hidden="true"></span> Analyze
             </NavLink>
+
+            @if (isAuthenticated)
+            {
+                <NavLink class="nav-link" href="/admin" Match="NavLinkMatch.All">
+                    <span class="oi oi-lock-locked" aria-hidden="true"></span> Admin Panel
+                </NavLink>
+            }
         </div>
     </nav>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
+    private bool isAuthenticated;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
@@ -34,4 +42,13 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+    }
+
+    [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 }
