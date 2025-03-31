@@ -35,7 +35,7 @@ namespace Functions
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
-                SqlQuery = "SELECT * FROM c",
+                SqlQuery = "SELECT * FROM c where c.Deleted = false",
                 Connection = "dbstr")] IEnumerable<SamFact> allFacts,
             ILogger log
         )
