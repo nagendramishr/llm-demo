@@ -27,19 +27,21 @@ namespace Functions
                 Connection = "dbstr")] IEnumerable<Prompt> allPrompts,
             ILogger log)
         {
-            List<string> prompts = new List<string>();
+            List<Prompt> prompts = new List<Prompt>();
 
             foreach (var item in allPrompts) {
+                var p = new Prompt();
             //         log.LogInformation($"ID: {sf.id} Text: {sf.text}");
-                var a = item.Text.Trim();
-                if (a.EndsWith(".")) {
-                    prompts.Add(a);
+                var text  = item.Text.Trim();
+                if (!text.EndsWith(".")) {
+                    text += ".";
                 }
-                else {
-                    prompts.Add(a + ".");
-                }
-            }
+                p.Text = text;
+                p.Title = item.Title.Trim();
 
+                prompts.Add(p);
+            }
+ 
             return new JsonResult(prompts);
 
             //return new  OkObjectResult(sb.ToString());
