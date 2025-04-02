@@ -30,14 +30,9 @@ namespace Functions
             List<Prompt> prompts = new List<Prompt>();
 
             foreach (var item in allPrompts) {
-                var p = new Prompt();
             //         log.LogInformation($"ID: {sf.id} Text: {sf.text}");
-                var text  = item.Text.Trim();
-                if (!text.EndsWith(".")) {
-                    text += ".";
-                }
-                p.Text = text;
-                p.Title = item.Title.Trim();
+
+                var p = new Prompt() {Text = item.Text.Trim(), Title = item.Title.Trim(), id = item.id, Delete = item.Delete };
 
                 prompts.Add(p);
             }
