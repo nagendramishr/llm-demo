@@ -30,11 +30,11 @@ namespace Functions
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var data = JsonSerializer.Deserialize<JsonElement>(requestBody);
                 string text = data.GetProperty("Text").GetString() ?? string.Empty;
-                string Title = data.GetProperty("Title").GetString() ?? string.Empty;
+                string title = data.GetProperty("Title").GetString() ?? string.Empty;
                 string id = data.GetProperty("id").GetString() ?? string.Empty;
-                bool Delete = data.GetProperty("Delete").GetBoolean();
+                bool delete = data.GetProperty("Delete").GetBoolean();
 
-                var prompt = new Prompt() { Text = text, Title = Title, Delete = Delete };
+                var prompt = new Prompt() { Text = text, Title = title, Delete = delete };
                 if (!string.IsNullOrEmpty(id))
                 {
                     prompt.id = id;
@@ -61,6 +61,7 @@ namespace Functions
 
     public class PromptMultiResponse
     {
+        [CosmosDBOutput(databaseName:"%CosmosDb%", containerName:"%PromptsContainer%", Connection = "dbstr", CreateIfNotExists = true)]
         public Prompt[]? Prompt { get; set; }
         [HttpResult]
         public required IActionResult Result { get; set; }
