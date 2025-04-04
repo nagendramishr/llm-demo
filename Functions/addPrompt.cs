@@ -29,16 +29,12 @@ namespace Functions
             try {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var data = JsonSerializer.Deserialize<JsonElement>(requestBody);
-                string text = data.GetProperty("Text").GetString() ?? string.Empty;
-                string title = data.GetProperty("Title").GetString() ?? string.Empty;
-                string id = data.GetProperty("id").GetString() ?? string.Empty;
-                bool delete = data.GetProperty("Delete").GetBoolean();
+                string text = data.GetPropertyOrDefault("Text", string.Empty); 
+                string title = data.GetPropertyOrDefault("Title", string.Empty);
+                string id = data.GetGuidPropertyOrDefault("id", Guid.NewGuid()).ToString();
+                bool delete = data.GetPropertyOrDefault("Delete", false);
 
                 var prompt = new Prompt() { Text = text, Title = title, Delete = delete };
-                if (!string.IsNullOrEmpty(id))
-                {
-                    prompt.id = id;
-                }
 
                 // Return a response to both HTTP trigger and storage output binding.
                 return new PromptMultiResponse()
