@@ -38,6 +38,8 @@ namespace Functions
                 bool delete = data.GetPropertyOrDefault("Delete", false);
                 DateTime created = data.GetPropertyOrDefault("Created", DateTime.UtcNow);
 
+                // Create a new Board object with the properties.
+                _logger.LogInformation($"Creating new Board with id: {id} title: {title} delete: {delete} owner: {owner} created: {created}"); 
                 var Board = new Board() { Title = title, Delete = delete, Owner = owner, Created = created};
 
                 // Return a response to both HTTP trigger and storage output binding.
