@@ -7,35 +7,46 @@
 @inject IConfiguration Configuration
 @attribute [Authorize]
 
+<PageTitle>List</PageTitle>
 <AuthorizeView>
     <Authorized>
-        @{
-<PageTitle>List</PageTitle>
+        
+    <h1>All The Facts:</h1>
 
-<h1>All The Facts</h1>
+    <div class="boards">
+    <span>Please select a board to view the facts:</span>
+        <select @bind="selectedBoard">
+            <option value="">Select a board</option>
+            @foreach (var board in boards)
+            {
+                <option value="@board.id">@board.Title</option>
+            }
+        </select>
 
-<div class="button" @onclick="@( async() => await GetFacts())">Refresh</div>
-
-@if (isReady) {
-    <hr>
-    <div class="list">
-        @foreach (string fact in facts)
-        {
-            <div class="fact">
-                    @fact
-            </div>
-        }
     </div>
-}
-else if (isLoading) {
-    <p>Loading...</p>
-}
 
-@if (errorOccurred) {
-    <p>@errorMessage</p>
+    //<div class="button" @onclick="@( async() => await GetFacts())">Refresh</div>
 
-}
-}
+    @if (isReady) {
+        <hr>
+        <div class="list">
+            @foreach (string fact in facts)
+            {
+                <div class="fact">
+                        @fact
+                </div>
+            }
+        </div>
+    }
+    else if (isLoading) {
+        <p>Loading...</p>
+    }
+
+    @if (errorOccurred) {
+        <p>@statusMessage</p>
+
+    }
+
         </Authorized>
         <NotAuthorized>
             <h3>Not Authorized</h3>
@@ -91,12 +102,18 @@ else if (isLoading) {
     bool isReady = false;
     bool isLoading = false;
     bool errorOccurred = false;
-    string errorMessage = "";
+    string statusMessage = "";
+
+    string selectedBoard = string.Empty;
     
 
     // Clean this up LATER!!!! .. basically, I think there is a round trip here that is not needed.
     protected async Task OnAfterRenderAsync() // = On Page Load
     {   
+        if (isReady == false && isLoading == false)
+        {
+            await GetBoards();
+        }
         StateHasChanged();
     }
 
@@ -104,26 +121,33 @@ else if (isLoading) {
     
     // HttpClient lifecycle management best practices:
     // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
-    private async Task GetFacts( )
-    {
-        await OnAfterRenderAsync();
+
+    private void getClient() {
         if (sharedClient == null)
         {
             var SamFuncHost = Configuration["SamFunction:Hostname"];
             var SamAuth = Configuration["SamFunction:FunctionKey"];
 
-            isReady = false; 
-
             sharedClient = new HttpClient();
             sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
             sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
+        }
+    }
+    private async Task GetFacts( )
+    {
+        await OnAfterRenderAsync();
+        if (sharedClient == null)
+        {
+            getClient();
+
+            isReady = false; 
             isLoading = true;
             StateHasChanged();
         }
 
         try {
 
-            var httpResponse = await sharedClient.GetAsync("api/getFacts");
+            var httpResponse = await sharedClient!.GetAsync("api/getFacts");
 
             httpResponse.EnsureSuccessStatusCode();
             var response = await httpResponse.Content.ReadAsStringAsync();
@@ -136,12 +160,12 @@ else if (isLoading) {
             else
             {
                 errorOccurred = true;
-                errorMessage = "No facts found.";
+                statusMessage = "No facts found.";
             }
 
         } catch (HttpRequestException e) {
             errorOccurred = true;
-            errorMessage = e.Message;
+            statusMessage = e.Message;
             Console.WriteLine(e);
         }
 
@@ -149,4 +173,34 @@ else if (isLoading) {
         isReady = true;
         StateHasChanged();
     }
+
+    static List<Board> boards = new List<Board>();
+    private async Task GetBoards()
+    {
+        try
+        {
+            if (sharedClient == null)
+            {
+                getClient();
+            }
+
+            var httpResponse =
+                await sharedClient!.GetAsync("api/getBoards");
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                statusMessage = $"Error: {httpResponse.StatusCode}";
+                return;
+            }
+
+            var jsonString = await httpResponse.Content.ReadAsStringAsync();
+            boards = JsonSerializer.Deserialize<List<Board>>(jsonString);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+
 }

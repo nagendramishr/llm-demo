@@ -55,7 +55,7 @@
                         isEditing[board.id] = false;
                         var title = board.Title;
 
-                        <div class="boardRow" @onclick="() => { isEditing[board.id] = true; }" >
+                        <div class="boardRow" @onclick="() => { isEditing[board.id] = true; }" @onclick:stopPropagation >
                             <span>@board.Created</span>
                             <span>@board.Owner</span>
                             @if (isEditing[board.id]) {
