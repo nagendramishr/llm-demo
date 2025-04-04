@@ -50,11 +50,18 @@
                 {    
                     @foreach (var board in boards)
                     {
-                        <div class="boardRow">
+                        var title = board.Title;
+                        var isEditing = "disabled";
+
+                        <div class="boardRow" @onclick="() => { isEditing = string.Empty; }" >
                             <span>@board.Created</span>
                             <span>@board.Owner</span>
-                            <span>@board.Title</span>
+                            <span><input type="text" placeholder="Title" @bind="@title" @isEditing/></span>
                             <span>@board.Delete</span>
+                            @if(String.IsNullOrEmpty(isEditing))
+                            {
+                                <button class="btn btn-danger" @onclick="async () => await AddBoard()">Save</button>
+                            }
                         </div>
                     }
                 }
@@ -160,6 +167,7 @@
 
             var jsonString = await httpResponse.Content.ReadAsStringAsync();
             boards = JsonSerializer.Deserialize<List<Board>>(jsonString);
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -202,8 +210,16 @@
                 statusMessage = $"Error: {httpResponse.StatusCode}";
                 return;
             }
+            var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
 
+            showAddBoard = false;
+            newBoardTitle = string.Empty;
+            newBoardOwner = string.Empty;
             statusMessage = "Board added successfully.";
+
+            StateHasChanged();
+            await GetBoards(); // Refresh the board list
+            
         }
         catch (Exception ex)
         {
