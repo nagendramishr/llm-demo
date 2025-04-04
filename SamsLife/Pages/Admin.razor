@@ -27,27 +27,25 @@
         @if (boards != null || showAddBoard)
         {
             <div class="boards">
-                <div class="boardRow">
-                    <span>Created</span>
-                    <span>Owner</span>
-                    <span>Title</span>
-                    <span>Delete</span>
-                </div>
 
                 @if (showAddBoard)
                 {
-                    <div class="boardRow">
-                        <span></span>
+                    <div class="addBoard">
                         <span>Enter the title for the board:</span>
                         <span><input type="text" placeholder="Title" @bind="newBoardTitle" /></span>
-                        <span></span>
                     </div>
 
-                    <button class="btn btn-danger addBoard" @onclick="async () => await AddBoard()">Add</button>
+                    <button class="btn btn-danger addBoardBtn" @onclick="async () => await AddBoard()">Add</button>
                 }
 
-                @if (boards != null)
+                @if (boards != null && !showAddBoard)
                 {    
+                    <div class="boardTitle">
+                        <span>Created</span>
+                        <span>Owner</span>
+                        <span>Title</span>
+                        <span>Delete</span>
+                    </div>
                     @foreach (var board in boards)
                     {
                         var title = board.Title;
@@ -85,12 +83,26 @@
     </NotAuthorized>
 </AuthorizeView>
 <style>
+    .addBoard {
+        display: flex;
+        gap: 10px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
     .boards {
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
 
+    .boardTitle {
+        display: flex;
+        gap: 10px;
+        padding: 5px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
     .boardRow {
         display: flex;
         gap: 10px;
@@ -98,13 +110,17 @@
         border: 1px solid #ccc;
         border-radius: 5px;
     }
+    .boardRow:hover {
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
     .boardRow span {
         flex: 1;
     }
 
-    .addBoard {
+    .addBoardBtn {
         margin-top: 10px;
-        width: 40px;
+        width: 80px;
         height: 30px;
         background-color: #007bff;
         color: white;
