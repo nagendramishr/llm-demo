@@ -37,13 +37,13 @@
                 @if (showAddBoard)
                 {
                     <div class="boardRow">
-                        <span>@DateTime.Now</span>
-                        <span>@user</span>
+                        <span></span>
+                        <span>Enter the title for the board:</span>
                         <span><input type="text" placeholder="Title" @bind="newBoardTitle" /></span>
                         <span></span>
                     </div>
 
-                    <button class="btn btn-danger" @onclick="async () => await AddBoard()">Add</button>
+                    <button class="btn btn-danger addBoard" @onclick="async () => await AddBoard()">Add</button>
                 }
 
                 @if (boards != null)
@@ -71,13 +71,11 @@
                 }
             </div>
         }
-        
-        
+                
         @if (boards == null || boards.Count == 0)
         {
             <p>No boards loaded.</p>
         }
-
 
         <p>@statusMessage</p>
     </Authorized>
@@ -102,6 +100,14 @@
     }
     .boardRow span {
         flex: 1;
+    }
+
+    .addBoard {
+        margin-top: 10px;
+        width: 40px;
+        height: 30px;
+        background-color: #007bff;
+        color: white;
     }
 </style>
 @code {
@@ -181,6 +187,13 @@
 
     private void showNewBoard(string owner)
     {
+        if (showAddBoard)
+        {
+            showAddBoard = false;
+            StateHasChanged();
+            return;
+        }
+
         showAddBoard = true;
         newBoardOwner = owner;
         newBoardTitle = string.Empty;
