@@ -11,6 +11,31 @@
 
         <button class="btn btn-danger" @onclick="ResetDatabase">Reset Database</button>
 
+        <hr>
+        <h4>Boards</h4>
+        <button class="btn btn-danger" @onclick="GetBoards">Load Boards</button>
+
+        @if (boards != null)
+        {
+            <div class="boards">
+                @foreach (var board in boards)
+                {
+                    <div class="boardRow">
+                        <span>@board.id</span>
+                        <span>@board.Created</span>
+                        <span>@board.Delete</span>
+                        <span>@board.Owner</span>
+                        <span>@board.Title</span>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>No boards loaded.</p>
+        }
+
+
         <p>@statusMessage</p>
     </Authorized>
     <NotAuthorized>
@@ -18,10 +43,40 @@
         <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=%2Fanalyze">Login</a></p>
     </NotAuthorized>
 </AuthorizeView>
+<style>
+    .boards {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
 
+    .boardRow {
+        display: flex;
+        gap: 10px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .boardRow span {
+        flex: 1;
+    }
+</style>
 @code {
     private string statusMessage = string.Empty;
-    private static HttpClient? sharedClient;    
+    private static HttpClient? sharedClient;
+    private List<Board>? boards;
+
+    private void getClient() {
+        if (sharedClient == null)
+        {
+            var SamFuncHost = Configuration["SamFunction:Hostname"];
+            var SamAuth = Configuration["SamFunction:FunctionKey"];
+
+            sharedClient = new HttpClient();
+            sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
+            sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
+        }
+    }
 
     private async Task ResetDatabase()
     {
@@ -29,16 +84,11 @@
         {
             if (sharedClient == null)
             {
-                var SamFuncHost = Configuration["SamFunction:Hostname"];
-                var SamAuth = Configuration["SamFunction:FunctionKey"];
-
-                sharedClient = new HttpClient();
-                sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
-                sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
+                getClient();
             }
 
             var httpResponse =
-                await sharedClient.GetAsync("api/resetDB");
+                await sharedClient!.GetAsync("api/resetDB");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -49,6 +99,33 @@
             // Simulate a database reset operation
             await Task.Delay(1000); // Replace this with your actual database reset logic
             statusMessage = "Database has been successfully reset.";
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+
+    private async Task GetBoards()
+    {
+        try
+        {
+            if (sharedClient == null)
+            {
+                getClient();
+            }
+
+            var httpResponse =
+                await sharedClient!.GetAsync("api/getBoards");
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                statusMessage = $"Error: {httpResponse.StatusCode}";
+                return;
+            }
+
+            var jsonString = await httpResponse.Content.ReadAsStringAsync();
+            boards = JsonSerializer.Deserialize<List<Board>>(jsonString);
         }
         catch (Exception ex)
         {
