@@ -21,8 +21,10 @@
 
         <hr>
         <h4>Boards</h4>
-        <button class="btn btn-danger" @onclick="GetBoards">Load Boards</button>
-        <button class="btn btn-danger" @onclick="() => showNewBoard(user)">New Board</button>
+        <div class="boardButtons">
+            <button class="btn btn-danger" @onclick="GetBoards">Load Boards</button>
+            <button class="btn btn-danger" @onclick="() => showNewBoard(user)">New Board</button>
+        </div>
 
         @if (boards != null || showAddBoard)
         {
@@ -40,21 +42,23 @@
 
                 @if (boards != null && !showAddBoard)
                 {    
+                    var isEditing = new Dictionary<string, bool>();
+
                     <div class="boardTitle">
                         <span>Created</span>
                         <span>Owner</span>
                         <span>Title</span>
-                        <span>Delete</span>
+                        <span>Hidden</span>
                     </div>
                     @foreach (var board in boards)
                     {
+                        isEditing[board.id] = false;
                         var title = board.Title;
-                        var isEditing = false;
 
-                        <div class="boardRow" @onclick="() => { isEditing = true; }" >
+                        <div class="boardRow" @onclick="() => { isEditing[board.id] = true; }" >
                             <span>@board.Created</span>
                             <span>@board.Owner</span>
-                            @if (isEditing) {
+                            @if (isEditing[board.id]) {
                                 <span><input type="text" placeholder="Title" @bind="@title" /></span>
                                 <span><checkbox></checkbox> Hide</span>
                                 <button class="btn btn-danger" @onclick="async () => await AddBoard()">Save</button>
@@ -83,6 +87,15 @@
     </NotAuthorized>
 </AuthorizeView>
 <style>
+    boardButtons {
+        display: flex;
+        gap: 10px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+        justify-content: space-between;
+    }
     .addBoard {
         display: flex;
         gap: 10px;
