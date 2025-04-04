@@ -51,16 +51,20 @@
                     @foreach (var board in boards)
                     {
                         var title = board.Title;
-                        var isEditing = "disabled";
+                        var isEditing = false;
 
-                        <div class="boardRow" @onclick="() => { isEditing = string.Empty; }" >
+                        <div class="boardRow" @onclick="() => { isEditing = true; }" >
                             <span>@board.Created</span>
                             <span>@board.Owner</span>
-                            <span><input type="text" placeholder="Title" @bind="@title" @isEditing/></span>
-                            <span>@board.Delete</span>
-                            @if(String.IsNullOrEmpty(isEditing))
-                            {
+                            @if (isEditing) {
+                                <span><input type="text" placeholder="Title" @bind="@title" /></span>
+                                <span><checkbox></checkbox> Hide</span>
                                 <button class="btn btn-danger" @onclick="async () => await AddBoard()">Save</button>
+                            }
+                            else
+                            {
+                                <span>@board.Title</span>
+                                <span>@board.Delete</span>
                             }
                         </div>
                     }
