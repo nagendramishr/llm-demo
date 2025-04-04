@@ -1,12 +1,20 @@
 @page "/admin"
 @using SamsLife.Data
-@inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using System.Net.Http
+@using System.Text.Json
+@inject ProtectedLocalStorage BrowserStorage
+@inject IConfiguration Configuration
 @using System.Text.Json
 @attribute [Authorize]
 
 <AuthorizeView>
     <Authorized>
+
+        @{
+            var user = context?.User?.Identity?.Name ?? "";
+        }
+
         <h3>Admin Panel</h3>
 
         <button class="btn btn-danger" @onclick="ResetDatabase">Reset Database</button>
@@ -14,23 +22,47 @@
         <hr>
         <h4>Boards</h4>
         <button class="btn btn-danger" @onclick="GetBoards">Load Boards</button>
+        <button class="btn btn-danger" @onclick="() => showNewBoard(user)">New Board</button>
 
-        @if (boards != null)
+        @if (boards != null || showAddBoard)
         {
             <div class="boards">
-                @foreach (var board in boards)
+                <div class="boardRow">
+                    <span>Created</span>
+                    <span>Owner</span>
+                    <span>Title</span>
+                    <span>Delete</span>
+                </div>
+
+                @if (showAddBoard)
                 {
                     <div class="boardRow">
-                        <span>@board.id</span>
-                        <span>@board.Created</span>
-                        <span>@board.Delete</span>
-                        <span>@board.Owner</span>
-                        <span>@board.Title</span>
+                        <span>@DateTime.Now</span>
+                        <span>@user</span>
+                        <span><input type="text" placeholder="Title" @bind="newBoardTitle" /></span>
+                        <span></span>
                     </div>
+
+                    <button class="btn btn-danger" @onclick="async () => await AddBoard()">Add</button>
+                }
+
+                @if (boards != null)
+                {    
+                    @foreach (var board in boards)
+                    {
+                        <div class="boardRow">
+                            <span>@board.Created</span>
+                            <span>@board.Owner</span>
+                            <span>@board.Title</span>
+                            <span>@board.Delete</span>
+                        </div>
+                    }
                 }
             </div>
         }
-        else
+        
+        
+        @if (boards == null || boards.Count == 0)
         {
             <p>No boards loaded.</p>
         }
@@ -65,7 +97,9 @@
     private string statusMessage = string.Empty;
     private static HttpClient? sharedClient;
     private List<Board>? boards;
-
+    private static bool showAddBoard = false;
+    private string newBoardTitle = string.Empty;
+    private string newBoardOwner = string.Empty;
     private void getClient() {
         if (sharedClient == null)
         {
@@ -132,4 +166,49 @@
             statusMessage = $"An error occurred: {ex.Message}";
         }
     }
+
+    private void showNewBoard(string owner)
+    {
+        showAddBoard = true;
+        newBoardOwner = owner;
+        newBoardTitle = string.Empty;
+        StateHasChanged();
+    }
+    private async Task AddBoard()
+    {
+        try
+        {
+            if (sharedClient == null)
+            {
+                getClient();
+            }
+
+            var newBoard = new Board
+            {
+                Created = DateTime.Now,
+                Owner = newBoardOwner, 
+                Title = newBoardTitle,
+                Delete = false
+            };
+
+            var jsonString = JsonSerializer.Serialize(newBoard);
+            var content = new StringContent(jsonString, System.Text.Encoding.UTF8, "application/json");
+
+            var httpResponse =
+                await sharedClient!.PostAsync("api/addBoard", content);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                statusMessage = $"Error: {httpResponse.StatusCode}";
+                return;
+            }
+
+            statusMessage = "Board added successfully.";
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+
 }
