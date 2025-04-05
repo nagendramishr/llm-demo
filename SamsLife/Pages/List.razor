@@ -4,28 +4,32 @@
 @using System.Net.Http
 @using System.Text.Json
 @inject ProtectedLocalStorage BrowserStorage
-@inject IConfiguration Configuration
+@* @inject IConfiguration Configuration *@
 @attribute [Authorize]
 
 <PageTitle>List</PageTitle>
 <AuthorizeView>
     <Authorized>
-        
+
+    @{
+        var user = context?.User?.Identity?.Name ?? "";
+        @* var user = "nmishr@outlook.com"; *@
+    }
+
     <h1>All The Facts:</h1>
 
+    <div class="button" @onclick="@( async() => await LoadBoards(user))">Refresh</div>
     <div class="boards">
     <span>Please select a board to view the facts:</span>
-        <select @bind="selectedBoard">
+        <select @bind="selectedBoard" @bind:event="onchange">
             <option value="">Select a board</option>
             @foreach (var board in boards)
             {
                 <option value="@board.id">@board.Title</option>
             }
         </select>
-
     </div>
 
-    //<div class="button" @onclick="@( async() => await GetFacts())">Refresh</div>
 
     @if (isReady) {
         <hr>
@@ -98,109 +102,84 @@
 
 @code {
 
+    List<Board> boards = new List<Board>();
     List<string> facts = new List<string>();
     bool isReady = false;
     bool isLoading = false;
     bool errorOccurred = false;
     string statusMessage = "";
 
-    string selectedBoard = string.Empty;
-    
+    private string _selectedBoard = string.Empty;
+    private string selectedBoard
+    {
+        get => _selectedBoard;
+        set
+        {
+            if (_selectedBoard != value)
+            {
+                _selectedBoard = value;
+                OnSelectedBoardChanged().ConfigureAwait(false);
+            }
+        }
+    }    
 
     // Clean this up LATER!!!! .. basically, I think there is a round trip here that is not needed.
     protected async Task OnAfterRenderAsync() // = On Page Load
     {   
         if (isReady == false && isLoading == false)
         {
-            await GetBoards();
+            @* await LoadBoards(); *@
         }
         StateHasChanged();
     }
 
-    private static HttpClient? sharedClient;
-    
-    // HttpClient lifecycle management best practices:
-    // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
 
-    private void getClient() {
-        if (sharedClient == null)
+    private async Task LoadBoards(string user) { 
+        var util = new Util();
+
+        var data = await util.GetBoards(user);
+        if (util.errorOccurred)
         {
-            var SamFuncHost = Configuration["SamFunction:Hostname"];
-            var SamAuth = Configuration["SamFunction:FunctionKey"];
+            errorOccurred = true;
+            statusMessage = util.statusMessage;
+            isLoading = false;
+            StateHasChanged();
+            return;
+        }
+        boards = data;
+        StateHasChanged();
+    }
 
-            sharedClient = new HttpClient();
-            sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
-            sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
+    private async Task OnSelectedBoardChanged()
+    {
+        Console.WriteLine($"Selected board: {selectedBoard}");
+        if (!string.IsNullOrEmpty(selectedBoard))
+        {
+            await GetFacts();
         }
     }
     private async Task GetFacts( )
     {
-        await OnAfterRenderAsync();
-        if (sharedClient == null)
+        isReady = false; 
+        isLoading = true;
+        StateHasChanged();
+        var util = new Util();
+
+        var data = await util.GetFacts();
+        if (util.errorOccurred)
         {
-            getClient();
-
-            isReady = false; 
-            isLoading = true;
-            StateHasChanged();
-        }
-
-        try {
-
-            var httpResponse = await sharedClient!.GetAsync("api/getFacts");
-
-            httpResponse.EnsureSuccessStatusCode();
-            var response = await httpResponse.Content.ReadAsStringAsync();
-            // Parse the response to get the response text
-            var responses = System.Text.Json.JsonSerializer.Deserialize<List<string>>(response);
-            if (responses != null)
-            {
-                facts = responses;
-            }
-            else
-            {
-                errorOccurred = true;
-                statusMessage = "No facts found.";
-            }
-
-        } catch (HttpRequestException e) {
             errorOccurred = true;
-            statusMessage = e.Message;
-            Console.WriteLine(e);
+            statusMessage = util.statusMessage;
+            isLoading = false;
+            StateHasChanged();
+            return;
         }
+        facts = data;
 
         isLoading = false;
         isReady = true;
         StateHasChanged();
     }
 
-    static List<Board> boards = new List<Board>();
-    private async Task GetBoards()
-    {
-        try
-        {
-            if (sharedClient == null)
-            {
-                getClient();
-            }
-
-            var httpResponse =
-                await sharedClient!.GetAsync("api/getBoards");
-
-            if (!httpResponse.IsSuccessStatusCode)
-            {
-                statusMessage = $"Error: {httpResponse.StatusCode}";
-                return;
-            }
-
-            var jsonString = await httpResponse.Content.ReadAsStringAsync();
-            boards = JsonSerializer.Deserialize<List<Board>>(jsonString);
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            statusMessage = $"An error occurred: {ex.Message}";
-        }
-    }
 
 }
