@@ -8,57 +8,37 @@ using System.Net.Http.Headers;
 
 public class Util
 {
+    private readonly HttpClient client;
+    private readonly IConfiguration configuration;
 
-    private static HttpClient? sharedClient;
-    private static IConfiguration? configuration;
-
-    // Singleton pattern for Configuration
-    private static IConfiguration Configuration
+    public Util(HttpClient httpClient, IConfiguration config)
     {
-        get
-        {
-            if (configuration == null)
-            {
-                var builder = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                configuration = builder.Build();
-            }
-            return configuration;
-        }
-    }
-    // Singleton pattern for HttpClient
-    public static HttpClient SharedClient
-    {
-        get
-        {
-            if (sharedClient == null)
-            {
-                var conf = Configuration;
-                var SamFuncHost = conf["SamFunction:Hostname"];
-                var SamAuth = conf["SamFunction:FunctionKey"];
+        client = httpClient;
+        configuration = config;
 
-                sharedClient = new HttpClient();
-                sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
-                sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
-                sharedClient.DefaultRequestHeaders.Accept.Clear();
-                sharedClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            }
-            return sharedClient;
-        }
+        var SamFuncHost = configuration["SamFunction:Hostname"];
+        var SamAuth = configuration["SamFunction:FunctionKey"];
+
+        client.BaseAddress = new Uri($"https://{SamFuncHost}");
+        client.DefaultRequestHeaders.Clear();
+        client.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
     public string statusMessage = string.Empty;
     public bool errorOccurred = false;
 
+    private void reset() {
+        statusMessage = string.Empty;
+        errorOccurred = false;
+    }
     public async Task<List<Board>> GetBoards(string user)
     {
         List<Board> boardList = new List<Board>();
-        errorOccurred = false;
-        statusMessage = string.Empty;
+        reset();
 
         try
         {
-            HttpClient client = SharedClient;
             var httpResponse =
                 await client.GetAsync("api/getBoards?user=" + user);
 
@@ -83,12 +63,9 @@ public class Util
     public async Task<List<string>> GetFacts( )
     {
         var responses = new List<string>();
-        errorOccurred = false;
-        statusMessage = string.Empty;
+        reset();
 
         try {
-            HttpClient client = SharedClient;
-
             var httpResponse = await client.GetAsync("api/getFacts");
 
             httpResponse.EnsureSuccessStatusCode();

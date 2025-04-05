@@ -72,6 +72,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Path = "/"; // <-- Explicitly set cookie path
     //options.Cookie.Domain = "samslife2.azurewebsites.net"; // <-- Add this line explicitly
 });
+
+builder.Services.AddScoped<Util>();
+builder.Services.AddHttpClient<Util>();
 var app = builder.Build();
 
 

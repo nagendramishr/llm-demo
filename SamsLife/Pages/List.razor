@@ -4,6 +4,7 @@
 @using System.Net.Http
 @using System.Text.Json
 @inject ProtectedLocalStorage BrowserStorage
+@inject Util util
 @* @inject IConfiguration Configuration *@
 @* @attribute [Authorize] *@
 
@@ -133,8 +134,6 @@
         StateHasChanged();
     }
     private async Task LoadBoards(string user) { 
-        var util = new Util();
-
         var data = await util.GetBoards(user);
         if (util.errorOccurred)
         {
@@ -163,7 +162,6 @@ private async Task GetFacts()
     errorOccurred = false;
     StateHasChanged();
 
-    var util = new Util();
     var newFacts = await util.GetFacts();
 
     errorOccurred = util.errorOccurred;
