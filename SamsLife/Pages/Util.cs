@@ -33,8 +33,9 @@ public class Util
         {
             if (sharedClient == null)
             {
-                var SamFuncHost = Configuration["SamFunction:Hostname"];
-                var SamAuth = Configuration["SamFunction:FunctionKey"];
+                var conf = Configuration;
+                var SamFuncHost = conf["SamFunction:Hostname"];
+                var SamAuth = conf["SamFunction:FunctionKey"];
 
                 sharedClient = new HttpClient();
                 sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
@@ -48,7 +49,7 @@ public class Util
 
     public string statusMessage = string.Empty;
     public bool errorOccurred = false;
-    
+
     public async Task<List<Board>> GetBoards(string user)
     {
         List<Board> boardList = new List<Board>();

@@ -5,15 +5,15 @@
 @using System.Text.Json
 @inject ProtectedLocalStorage BrowserStorage
 @* @inject IConfiguration Configuration *@
-@attribute [Authorize]
+@* @attribute [Authorize] *@
 
 <PageTitle>List</PageTitle>
-<AuthorizeView>
-    <Authorized>
+@* <AuthorizeView>
+    <Authorized> *@
 
     @{
-        var user = context?.User?.Identity?.Name ?? "";
-        @* var user = "nmishr@outlook.com"; *@
+        @* var user = context?.User?.Identity?.Name ?? ""; *@
+        var user = "nmishr@outlook.com";
     }
 
     <h1>All The Facts:</h1>
@@ -51,12 +51,12 @@
 
     }
 
-        </Authorized>
+        @* </Authorized>
         <NotAuthorized>
             <h3>Not Authorized</h3>
             <p>You are not authorized to view this page.</p>
         </NotAuthorized>
-    </AuthorizeView>
+    </AuthorizeView> *@
 <style>
 .list {
     margin-top: 40px;
@@ -132,8 +132,6 @@
         }
         StateHasChanged();
     }
-
-
     private async Task LoadBoards(string user) { 
         var util = new Util();
 
@@ -158,28 +156,25 @@
             await GetFacts();
         }
     }
-    private async Task GetFacts( )
-    {
-        isReady = false; 
-        isLoading = true;
-        StateHasChanged();
-        var util = new Util();
+private async Task GetFacts()
+{
+    isLoading = true;
+    isReady = false;
+    errorOccurred = false;
+    StateHasChanged();
 
-        var data = await util.GetFacts();
-        if (util.errorOccurred)
-        {
-            errorOccurred = true;
-            statusMessage = util.statusMessage;
-            isLoading = false;
-            StateHasChanged();
-            return;
-        }
-        facts = data;
+    var util = new Util();
+    var newFacts = await util.GetFacts();
 
-        isLoading = false;
-        isReady = true;
-        StateHasChanged();
-    }
+    errorOccurred = util.errorOccurred;
+    statusMessage = util.statusMessage;
+
+    if (!errorOccurred) facts = newFacts;
+
+    isLoading = false;
+    isReady = !errorOccurred;
+    StateHasChanged();
+}
 
 
 }
