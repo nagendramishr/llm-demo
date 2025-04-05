@@ -5,16 +5,15 @@
 @using System.Text.Json
 @inject ProtectedLocalStorage BrowserStorage
 @inject Util util
-@* @inject IConfiguration Configuration *@
-@* @attribute [Authorize] *@
+@attribute [Authorize]
 
 <PageTitle>List</PageTitle>
-@* <AuthorizeView>
-    <Authorized> *@
+<AuthorizeView>
+    <Authorized>
 
     @{
-        @* var user = context?.User?.Identity?.Name ?? ""; *@
-        var user = "nmishr@outlook.com";
+        var user = context?.User?.Identity?.Name ?? "";
+        @* var user = "nmishr@outlook.com"; *@
     }
 
     <h1>All The Facts:</h1>
@@ -52,12 +51,12 @@
 
     }
 
-        @* </Authorized>
+        </Authorized>
         <NotAuthorized>
             <h3>Not Authorized</h3>
             <p>You are not authorized to view this page.</p>
         </NotAuthorized>
-    </AuthorizeView> *@
+    </AuthorizeView>
 <style>
 .list {
     margin-top: 40px;
@@ -162,7 +161,7 @@ private async Task GetFacts()
     errorOccurred = false;
     StateHasChanged();
 
-    var newFacts = await util.GetFacts();
+    var newFacts = await util.GetFacts("");
 
     errorOccurred = util.errorOccurred;
     statusMessage = util.statusMessage;

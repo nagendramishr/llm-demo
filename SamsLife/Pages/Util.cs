@@ -32,6 +32,32 @@ public class Util
         statusMessage = string.Empty;
         errorOccurred = false;
     }
+
+    public async Task AddBoard(string user, Board board) {
+        reset();
+
+        try
+        {
+            var jsonString = JsonSerializer.Serialize(board);
+            var content = new StringContent(jsonString, System.Text.Encoding.UTF8, "application/json");
+
+            var httpResponse = await client.PostAsync("api/addBoard?user=" + user, content);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                statusMessage = $"Error: {httpResponse.StatusCode}";
+                return;
+            }
+
+            var responseString = await httpResponse.Content.ReadAsStringAsync();
+            statusMessage = responseString;
+        }
+        catch (Exception ex)
+        {
+            errorOccurred = true;
+            statusMessage = $"An error occurred: {ex.Message}";
+        }
+    }
     public async Task<List<Board>> GetBoards(string user)
     {
         List<Board> boardList = new List<Board>();
@@ -60,13 +86,14 @@ public class Util
         return boardList;
     }
 
-    public async Task<List<string>> GetFacts( )
+    public async Task<List<string>> GetFacts(string boardId)
+
     {
         var responses = new List<string>();
         reset();
 
         try {
-            var httpResponse = await client.GetAsync("api/getFacts");
+            var httpResponse = await client.GetAsync("api/getFacts?boardId=" + boardId);
 
             httpResponse.EnsureSuccessStatusCode();
             var response = await httpResponse.Content.ReadAsStringAsync();
@@ -86,4 +113,14 @@ public class Util
         return responses!;
     }
 
+    public async Task ResetFacts(string boardId) {
+        try {
+            var httpResponse = await client.GetAsync("api/resetDB?boardId=" + boardId);
+            httpResponse.EnsureSuccessStatusCode();
+            var response = await httpResponse.Content.ReadAsStringAsync();
+        } catch (HttpRequestException e) {
+            errorOccurred = true;
+            statusMessage = e.Message;
+        }
+    }
 }

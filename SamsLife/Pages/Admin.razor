@@ -4,7 +4,8 @@
 @using System.Net.Http
 @using System.Text.Json
 @inject ProtectedLocalStorage BrowserStorage
-@inject IConfiguration Configuration
+@* @inject IConfiguration Configuration *@
+@inject Util util
 @using System.Text.Json
 @attribute [Authorize]
 
@@ -17,12 +18,12 @@
 
         <h3>Admin Panel</h3>
 
-        <button class="btn btn-danger" @onclick="ResetDatabase">Reset Database</button>
+        <button class="btn btn-danger" @onclick="async() => await ResetDatabase(user)">Reset Database</button>
 
         <hr>
         <h4>Boards</h4>
         <div class="boardButtons">
-            <button class="btn btn-danger" @onclick="GetBoards">Load Boards</button>
+            <button class="btn btn-danger" @onclick="async () => await GetBoards(user)">Load Boards</button>
             <button class="btn btn-danger" @onclick="() => showNewBoard(user)">New Board</button>
         </div>
 
@@ -37,7 +38,7 @@
                         <span><input type="text" placeholder="Title" @bind="newBoardTitle" /></span>
                     </div>
 
-                    <button class="btn btn-danger addBoardBtn" @onclick="async () => await AddBoard()">Add</button>
+                    <button class="btn btn-danger addBoardBtn" @onclick="async () => await AddBoard(user)">Add</button>
                 }
 
                 @if (boards != null && !showAddBoard)
@@ -61,7 +62,7 @@
                             @if (isEditing[board.id]) {
                                 <span><input type="text" placeholder="Title" @bind="@title" /></span>
                                 <span><checkbox></checkbox> Hide</span>
-                                <button class="btn btn-danger" @onclick="async () => await AddBoard()">Save</button>
+                                <button class="btn btn-danger" @onclick="async () => await AddBoard(user)">Save</button>
                             }
                             else
                             {
@@ -141,12 +142,12 @@
 </style>
 @code {
     private string statusMessage = string.Empty;
-    private static HttpClient? sharedClient;
+    @* private static HttpClient? sharedClient; *@
     private List<Board>? boards;
     private static bool showAddBoard = false;
     private string newBoardTitle = string.Empty;
     private string newBoardOwner = string.Empty;
-    private void getClient() {
+    @* private void getClient() {
         if (sharedClient == null)
         {
             var SamFuncHost = Configuration["SamFunction:Hostname"];
@@ -156,11 +157,18 @@
             sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
             sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
         }
-    }
+    } *@
 
-    private async Task ResetDatabase()
+    private async Task ResetDatabase(string boardId)
     {
-        try
+        await util.ResetFacts(boardId);
+        if (util.errorOccurred)
+        {
+            statusMessage = util.statusMessage;
+            StateHasChanged();
+            return;
+        }
+        @* try
         {
             if (sharedClient == null)
             {
@@ -183,12 +191,22 @@
         catch (Exception ex)
         {
             statusMessage = $"An error occurred: {ex.Message}";
-        }
+        } *@
     }
 
-    private async Task GetBoards()
+    private async Task GetBoards(string user)
     {
-        try
+
+        var data = await util.GetBoards(user);
+        if (util.errorOccurred)
+        {
+            statusMessage = util.statusMessage;
+            StateHasChanged();
+            return;
+        }
+        boards = data;
+        StateHasChanged();
+        @* try
         {
             if (sharedClient == null)
             {
@@ -211,9 +229,11 @@
         catch (Exception ex)
         {
             statusMessage = $"An error occurred: {ex.Message}";
-        }
+        } *@
     }
 
+
+    @* Toggles the display of the add board panel *@
     private void showNewBoard(string owner)
     {
         if (showAddBoard)
@@ -228,7 +248,28 @@
         newBoardTitle = string.Empty;
         StateHasChanged();
     }
-    private async Task AddBoard()
+
+    private async Task AddBoard(string user) {
+        var b = new Board
+        {
+            Created = DateTime.Now,
+            Owner = user,
+            Title = newBoardTitle,
+            Delete = false
+        };
+        await util.AddBoard(user, b);
+
+        if (util.errorOccurred)
+        {
+            statusMessage = util.statusMessage;
+            StateHasChanged();
+            return;
+        }
+        await GetBoards(user); // Refresh the board list
+        StateHasChanged();
+    }
+
+    @* private async Task AddBoard(string user)
     {
         try
         {
@@ -240,7 +281,7 @@
             var newBoard = new Board
             {
                 Created = DateTime.Now,
-                Owner = newBoardOwner, 
+                Owner = user, 
                 Title = newBoardTitle,
                 Delete = false
             };
@@ -264,13 +305,13 @@
             statusMessage = "Board added successfully.";
 
             StateHasChanged();
-            await GetBoards(); // Refresh the board list
+            await GetBoards(user); // Refresh the board list
             
         }
         catch (Exception ex)
         {
             statusMessage = $"An error occurred: {ex.Message}";
         }
-    }
+    } *@
 
 }
