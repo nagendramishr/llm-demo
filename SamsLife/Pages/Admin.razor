@@ -21,6 +21,10 @@
     <NotAuthorized>
         <p>You are not authenticated.</p>
         <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=%2Fanalyze">Login</a></p>
+        @{
+            user = "";
+            authorized=false;
+        }
     </NotAuthorized>
 </AuthorizeView>
 
@@ -103,8 +107,8 @@
     private static bool showAddBoard = false;
     private string newBoardTitle = string.Empty;
     private string newBoardOwner = string.Empty;
-    private bool authorized = true;
-    private string user = "nmishr@outlook.com";
+    private bool authorized =false;
+    private string user = "";
 
     private async Task ResetDatabase(string boardId)
     {
