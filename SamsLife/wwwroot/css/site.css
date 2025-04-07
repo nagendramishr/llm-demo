@@ -66,3 +66,80 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+    boardButtons {
+        display: flex;
+        gap: 10px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+        justify-content: space-between;
+    }
+    .addBoard {
+        display: flex;
+        gap: 10px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .boards {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .boardTitle {
+        display: flex;
+        gap: 10px;
+        padding: 5px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    .boardRow {
+        display: flex;
+        gap: 10px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .boardRow:hover {
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
+    .boardRow span {
+        flex: 1;
+    }
+
+    .addBoardBtn {
+        margin-top: 10px;
+        width: 80px;
+        height: 30px;
+        background-color: #007bff;
+        color: white;
+    }
+
+    .blank {
+        height: 100px;
+    }
+.parent {
+    display: flex;
+    justify-content: left;
+    align-items: top;
+    height: 100vh;
+}
+.button-like {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+    height: 40px;
+}
+
+.button-like:hover {
+    background-color: #0056b3;
+}

@@ -5,7 +5,8 @@
 @inject ProtectedLocalStorage BrowserStorage
 @inject IConfiguration Configuration
 @inject NavigationManager NavigationManager
-
+@inject UrlHashHelper UrlHashHelper
+@using Microsoft.AspNetCore.WebUtilities
 <PageTitle>Index</PageTitle>
 
 <h1>Fact Analyzer!</h1>
@@ -15,15 +16,38 @@
     <p>In this interactive session, you're a key part of our discovery process. As our presenter guides you, please share the facts you know by entering them below. Once submitted, OpenAI’s generative AI will analyze your input to reveal insightful connections and patterns. </p>
 
     <p>Let's see the power of collaborative knowledge in action.</p>
+
+    @if(isValidUrl) {
     
-    <p><b>Type in a fact below:</b></p>
+        <p><b>Type in a fact below:</b></p>
+        <i>Once you submit a fact, it will be sent to the cloud for analysis.</i>
 
-    <p>@status</p>
+        <p>@status</p>
 
-    <div class="parent">
-        <input style="width: 400px; height: 300px;" rows="10" cols="40" type="text" name="fact" @bind="userFact" />
-        <div class="button-like"  @onclick="@( async() => await AddFact(userFact))"> Submit</div>
-    </div>
+        <div class="parent">
+            <input style="width: 400px; height: 300px;" rows="10" cols="40" type="text" name="fact" @bind="userFact" />
+            <div class="button-like"  @onclick="@( async() => await AddFact(userFact))"> Submit</div>
+        </div>
+
+        @{
+            var url = NavigationManager?.Uri;
+
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@url" alt="QR Code" />
+            <div class="blank"/>
+        }
+
+        @if (NavigationManager != null)
+        {
+            <p>Your can share this link with your friends: <a href="@NavigationManager.Uri">@NavigationManager.Uri</a></p>
+            <p>Or scan the QR code above!</p>
+        }
+
+
+
+
+    } else {
+        <p> please wait for the presenter to share valid board URL.</p>
+    }
 }
 else if (isSubmitting) {
     <p>Saving...</p>
@@ -35,40 +59,12 @@ else if (isDoneSubmitting) {
     <div class="button-like"  @onclick="@(async () => await Reset())"> Continue</div>
 }
 
-@{
-    var url = NavigationManager?.Uri;
 
-<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@url" alt="QR Code" />
 
-}
 @if (errorOccurred) {
     <p>@errorMessage</p>
 
 }
-
-<style>
-.parent {
-    display: flex;
-    justify-content: left;
-    align-items: top;
-    height: 100vh;
-}
-.button-like {
-    background-color: #007bff;
-    color: #ffffff;
-    padding: 8px 16px;
-    border-radius: 4px;
-    display: inline-block;
-    cursor: pointer;
-    text-align: center;
-    user-select: none;
-    height: 40px;
-}
-
-.button-like:hover {
-    background-color: #0056b3;
-}
-</style>
 
 @code {
 
@@ -156,4 +152,37 @@ else if (isDoneSubmitting) {
         status = "Your fact has been submitted!";
         StateHasChanged();
     }
+
+    private string boardId;
+    private string hash;
+    private bool isValidUrl = false;
+
+    protected override void OnInitialized()
+    {
+        try {
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("bid", out var bidParam) && query.TryGetValue("hash", out var hashParam))
+        {
+            boardId = bidParam!;
+            hash = hashParam!;
+
+            // Validate the hash
+            isValidUrl = UrlHashHelper.VerifyHash(boardId, hash);
+
+        }
+        else
+        {
+            // Handle missing parameters
+            isValidUrl= false;
+        }
+        } catch (Exception ex) {
+            errorOccurred = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex);
+        }
+    }
+
 }
