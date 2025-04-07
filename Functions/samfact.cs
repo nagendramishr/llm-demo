@@ -14,6 +14,10 @@ namespace Functions
 
         [JsonPropertyName("Delete")]
         public bool Delete { get; set; } = false;
+
+        [JsonPropertyName("boardId")]
+        public string boardId {get; set; }
+        
         public SamFact()
         {
             id= Guid.NewGuid().ToString();

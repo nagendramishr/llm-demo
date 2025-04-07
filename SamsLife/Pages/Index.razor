@@ -21,6 +21,7 @@
     <p>Let's see the power of collaborative knowledge in action.</p>
 
     @if(isValidUrl) {
+        var url = NavigationManager?.Uri;
     
         <p><b>Type in a fact below:</b></p>
         <i>Once you submit a fact, it will be sent to the cloud for analysis.</i>
@@ -32,12 +33,10 @@
             <div class="button-like"  @onclick="@( async() => await AddFact(userFact))"> Submit</div>
         </div>
 
-        var url = NavigationManager?.Uri;
-
         <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@url" alt="QR Code" />
         <div class="blank"/>
         
-        if (NavigationManager != null)
+        @if (NavigationManager != null)
         {
             <p>Your can share this link with your friends: <a href="@NavigationManager.Uri">@NavigationManager.Uri</a></p>
             <p>Or scan the QR code above!</p>
@@ -70,7 +69,7 @@ else if (isDoneSubmitting) {
 
     string userFact;
 
-    // this should be a unique userID... need to test.
+     @* this should be a unique userID... need to test. *@
     string currentInputValue;
     string status = "";
 
@@ -93,8 +92,8 @@ else if (isDoneSubmitting) {
         currentInputValue = result.Success ? result.Value ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
     }
 
-    // Clean this up LATER!!!! .. basically, I think there is a round trip here that is not needed.
-    protected async Task OnAfterRenderAsync() // = On Page Load
+    @* // Clean this up LATER!!!! .. basically, I think there is a round trip here that is not needed. *@
+    protected async Task OnAfterRenderAsync() @* = On Page Load *@
     {   
         await Read();
         await Save();
@@ -108,7 +107,7 @@ else if (isDoneSubmitting) {
         isReady = true;
         StateHasChanged();
 
-        // delay for 3 seconds and clear
+        @* // delay for 3 seconds and clear *@
         await Task.Delay(3000);
         status = "";
         StateHasChanged();
@@ -117,8 +116,6 @@ else if (isDoneSubmitting) {
 
     @* private static HttpClient? sharedClient; *@
     
-    // HttpClient lifecycle management best practices:
-    // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
     private async Task AddFact( string inputString)
     {
         @* await OnAfterRenderAsync();*@
@@ -176,12 +173,12 @@ else if (isDoneSubmitting) {
             boardId = bidParam!;
             hash = hashParam!;
 
-            // Validate the hash
+            @* // Validate the hash *@
             isValidUrl = UrlHashHelper.VerifyHash(boardId, hash);
         }
         else
         {
-            // Handle missing parameters
+            @* // Handle missing parameters *@
             isValidUrl= false;
         }
         } catch (Exception ex) {

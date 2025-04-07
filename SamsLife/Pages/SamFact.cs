@@ -7,11 +7,12 @@ public class SamFact {
     public string? Message {get; set; }
     public string id { get; set; }
 
+    public string boardId { get; set; }="";
+
     public SamFact()
     {
-//        public static RandomNumberGenerator rg = RandomNumberGenerator.Create();
-
-        id = "A213213";
+        // Generate a new unique ID for each instance
+        id = Guid.NewGuid().ToString();
     }
 
 }
