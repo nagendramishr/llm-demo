@@ -22,9 +22,9 @@ namespace Functions
             _logger.LogInformation($"C# Queue trigger function processing : {message.MessageText}");
 
             if (!string.IsNullOrEmpty( message.MessageText) ) {
-                SamFact sf = new ();
-                sf.Message = message.MessageText.Trim();
-                if (!sf.Message.EndsWith(".")) {
+                SamFact sf = JsonSerializer.Deserialize<SamFact>(message.MessageText);
+                sf.Message = sf.Message.Trim();
+                if (!sf.Message.EndsWith(".") && !sf.Message.EndsWith("?")) {
                     sf.Message = sf.Message + ".";
                 }
                 _logger.LogInformation($"Processed: {sf.Message}");
