@@ -6,7 +6,10 @@
 @inject IConfiguration Configuration
 @inject NavigationManager NavigationManager
 @inject UrlHashHelper UrlHashHelper
+@inject Util util
+
 @using Microsoft.AspNetCore.WebUtilities
+
 <PageTitle>Index</PageTitle>
 
 <h1>Fact Analyzer!</h1>
@@ -29,24 +32,21 @@
             <div class="button-like"  @onclick="@( async() => await AddFact(userFact))"> Submit</div>
         </div>
 
-        @{
-            var url = NavigationManager?.Uri;
+        var url = NavigationManager?.Uri;
 
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@url" alt="QR Code" />
-            <div class="blank"/>
-        }
-
-        @if (NavigationManager != null)
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=@url" alt="QR Code" />
+        <div class="blank"/>
+        
+        if (NavigationManager != null)
         {
             <p>Your can share this link with your friends: <a href="@NavigationManager.Uri">@NavigationManager.Uri</a></p>
             <p>Or scan the QR code above!</p>
         }
 
-
-
-
     } else {
-        <p> please wait for the presenter to share valid board URL.</p>
+        <h2> Please wait for the presentation URL.</h2>
+
+        <img src="@kurl" alt="Kitten" style="width: 400px; margin-top: 40px" />
     }
 }
 else if (isSubmitting) {
@@ -69,8 +69,12 @@ else if (isDoneSubmitting) {
 @code {
 
     string userFact;
+
+    // this should be a unique userID... need to test.
     string currentInputValue;
     string status = "";
+
+    string kurl = $"kitten{Random.Shared.Next(1, 4)}.png";
     bool isReady = true;
     bool isSubmitting = false;
     bool isDoneSubmitting = false;
@@ -111,13 +115,15 @@ else if (isDoneSubmitting) {
 
     }
 
-    private static HttpClient? sharedClient;
+    @* private static HttpClient? sharedClient; *@
     
     // HttpClient lifecycle management best practices:
     // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
     private async Task AddFact( string inputString)
     {
-        await OnAfterRenderAsync();
+        @* await OnAfterRenderAsync();*@
+
+        @*
         if (sharedClient == null)
         {
             var SamFuncHost = Configuration["SamFunction:Hostname"];
@@ -144,8 +150,9 @@ else if (isDoneSubmitting) {
             errorOccurred = true;
             errorMessage = e.Message;
             Console.WriteLine(e);
-        }
+        } *@
 
+        await util.addFact(boardId, inputString);
         isSubmitting = false;
         isDoneSubmitting = true;
         userFact = "";
@@ -171,7 +178,6 @@ else if (isDoneSubmitting) {
 
             // Validate the hash
             isValidUrl = UrlHashHelper.VerifyHash(boardId, hash);
-
         }
         else
         {

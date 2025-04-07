@@ -86,6 +86,37 @@ public class Util
         return boardList;
     }
 
+    public async Task addFact(string boardId, string fact)
+    {
+        reset();
+
+        try
+        {
+            Console.WriteLine("Adding fact: " + fact);
+            Console.WriteLine("Board ID: " + boardId);
+
+            var sf = new SamFact() { Message = fact, boardId = boardId };
+            string json = System.Text.Json.JsonSerializer.Serialize(sf);
+
+            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+            var httpResponse = await client.PostAsync("api/addFact", content);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                statusMessage = $"Error: {httpResponse.StatusCode}";
+                return;
+            }
+
+            var responseString = await httpResponse.Content.ReadAsStringAsync();
+            statusMessage = responseString;
+        }
+        catch (Exception ex)
+        {
+            errorOccurred = true;
+            statusMessage = $"An error occurred: {ex.Message}";
+        }
+    }
     public async Task<List<string>> GetFacts(string boardId)
 
     {
