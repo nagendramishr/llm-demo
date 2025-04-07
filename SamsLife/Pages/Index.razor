@@ -113,47 +113,31 @@ else if (isDoneSubmitting) {
         StateHasChanged();
 
     }
-
-    @* private static HttpClient? sharedClient; *@
     
     private async Task AddFact( string inputString)
     {
         @* await OnAfterRenderAsync();*@
 
-        @*
-        if (sharedClient == null)
-        {
-            var SamFuncHost = Configuration["SamFunction:Hostname"];
-            var SamAuth = Configuration["SamFunction:FunctionKey"];
-
-            status = "Uploading your fact to the cloud...";
-            isReady = false; 
-
-            sharedClient = new HttpClient();
-            sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
-            sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
-            isSubmitting = true;
-            StateHasChanged();
-        }
-
-        try {
-//            Console.WriteLine($"Adding fact: {inputString}");
-            var sf = new SamFact() { id = currentInputValue, Message = inputString };
-            string json = System.Text.Json.JsonSerializer.Serialize(sf);
-//            Console.WriteLine($"Serialized fact: {json}");
-//            Console.WriteLine($"Sending to {sharedClient.BaseAddress}api/addFact");
-            await sharedClient.PostAsync("api/addFact", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
-        } catch (HttpRequestException e) {
-            errorOccurred = true;
-            errorMessage = e.Message;
-            Console.WriteLine(e);
-        } *@
+        isSubmitting = true;
+        isReady = false;
+        status = "Saving...";
+        StateHasChanged();
 
         await util.addFact(boardId, inputString);
+
+        await Task.Delay(3000);
+
+        if (util.errorOccurred) {
+            errorOccurred = true;
+            errorMessage = util.statusMessage;
+        }
+        else {
+            userFact = "";
+            status = "Your fact has been submitted!";
+        }
+    
         isSubmitting = false;
         isDoneSubmitting = true;
-        userFact = "";
-        status = "Your fact has been submitted!";
         StateHasChanged();
     }
 
