@@ -40,7 +40,7 @@
 
                 <div class="button" @onclick="@( async() => await LoadBoards(user))">Refresh</div>
                 <div class="boards">
-                <span>Please select a board to view the facts:</span>
+                <span>Please select a board for the analysis:</span>
                     <select @bind="selectedBoard" @bind:event="onchange">
                         <option value="">Select a board</option>
                         @foreach (var board in boards)
@@ -228,7 +228,7 @@
             string json = System.Text.Json.JsonSerializer.Serialize(sf);
 
             var httpResponse =
-                await sharedClient.PostAsync("api/getSummary", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
+                await sharedClient.PostAsync($"api/getSummary/{_selectedBoard}", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
 
             Console.WriteLine ($"Response: {httpResponse.StatusCode}");
 
