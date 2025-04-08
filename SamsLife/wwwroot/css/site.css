@@ -143,3 +143,182 @@ a, .btn-link {
 .button-like:hover {
     background-color: #0056b3;
 }
+
+.debate {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    width: 80%;
+    height: auto; /* Make the debate take the height of its content */
+    flex-grow: 1;
+    align-self: flex-start; /* Align the debate at the top */
+}
+.persona {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border: thin black solid;
+    width: 80%;
+    height: auto; /* Make the persona take the height of its content */
+    flex-grow: 1;
+    align-self: flex-start; /* Align the persona at the top */
+    color: blue;
+}
+.personb {
+    background-color: #e0e0e0;
+    padding: 10px;
+    border: thin black solid;
+    width: 80%;
+    height: auto; /* Make the personb take the height of its content */
+    flex-grow: 1;
+    align-self: flex-end; /* Align the personb at the top */
+    color: green;
+}
+.button {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+    height: 40px;
+}
+.response {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border: thin black solid;
+    width: "80%";
+    height: auto; /* Make the response take the height of its content */
+    flex-grow: 1;
+    align-self: flex-start; /* Align the response at the top */
+    font-size: 32px;
+}
+
+.queryparent {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin: 10px;
+    width: 80%;
+}
+
+.querylist {
+    display: flex;
+    margin: 10px;
+    flex-wrap: wrap;
+}
+
+.query {
+    background-color: #f0f0f0;
+    padding: 10px;
+    cursor: pointer;
+    border: thin black solid;
+    width: 100%;
+    flex-basis: 50%;
+    box-sizing: border-box;
+}
+
+.queryHText {
+    visibility: hidden;
+    width: 160px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 6px;
+    
+    /* Position the tooltip above the button */
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    
+    /* Add a fade-in effect */
+    transition: opacity 0.3s;
+}
+
+.query:hover .queryHText {
+    visibility: visible;
+    opacity: 1;
+}
+
+.queryText {
+    background-color: #f0f0f0;
+    border: thin black solid;
+}
+
+.queryBox {
+    padding: 10px;
+    cursor: pointer;
+    width: 80%;
+    height: auto; /* Make the queryBox take the height of its content */
+    flex-grow: 1;
+    align-self: flex-start; /* Align the queryBox at the top */
+    font-size:large 24px;
+}
+
+.query:hover {
+    background-color: #e0e0e0;
+}
+.UsageBox {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    width: 20%;
+    height: auto; /* Make the usageBox take the height of its content */
+    flex-grow: 2;
+    align-self: flex-start; /* Align the usageBox at the top */
+}
+
+.usage {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border: thin black solid;
+    width: 20%;
+    height: auto; /* Make the usage take the height of its content */
+    flex-grow: 2;
+    align-self: flex-start; /* Align the usage at the top */
+}
+.UsageItem {
+    border-bottom: thin black solid;
+    display: flex;
+    justify-content: space-between;
+    botder: thin black solid;
+    
+}
+.IndentedItems {
+    margin-left: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+}
+.IndentedHeading {
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 20px;
+    margin-right: 10px;
+}
+.IndentedItem {
+    margin-left: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+.UsageItemKey {
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 40px;
+    margin-right: 10px;
+}
+.UsageItemValue {
+    font-size: 12px;
+    margin-left: 10px;
+}
+.usage:hover {
+    background-color: #e0e0e0;
+}
