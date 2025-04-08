@@ -19,11 +19,11 @@ namespace Functions
         //[Function("HttpFunction")]
         [Function("getFacts")]
         public IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route ="{bid:alpha}")] HttpRequest req,
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
-                SqlQuery = "SELECT * FROM c where c.Delete = false",
+                SqlQuery = "SELECT * FROM c where c.Delete = false and c.BoardId = {bid}",
                 Connection = "dbstr")] IEnumerable<SamFact> allFacts,
             ILogger log)
         {
