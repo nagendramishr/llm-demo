@@ -21,7 +21,7 @@
     <p>Let's see the power of collaborative knowledge in action.</p>
 
     @if(isValidUrl) {
-        var url = NavigationManager?.Uri;
+        var url = System.Web.HttpUtility.UrlEncode(NavigationManager?.Uri);
     
         <p><b>Type in a fact below:</b></p>
         <i>Once you submit a fact, it will be sent to the cloud for analysis.</i>
