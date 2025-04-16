@@ -19,7 +19,7 @@ namespace Functions
         //[Function("HttpFunction")]
         [Function("getFacts")]
         public IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route ="{bid:alpha}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route ="{bid}")] HttpRequest req,
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
