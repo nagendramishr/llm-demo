@@ -9,11 +9,15 @@
 
 <PageTitle>List</PageTitle>
 <AuthorizeView>
-    <Authorized>
+    <NotAuthorized>
+        <h3>Not Authorized</h3>
+        <p>You are not authorized to view this page.</p>
+    </NotAuthorized>
+    <NotAuthorized>
 
     @{
-        var user = context?.User?.Identity?.Name ?? "";
-        @* var user = "nmishr@outlook.com"; *@
+        var user = "nmishr@outlook.com"; 
+        @* var user = context?.User?.Identity?.Name ?? ""; *@
     }
 
     <h1>All The Facts:</h1>
@@ -51,12 +55,8 @@
 
     }
 
-        </Authorized>
-        <NotAuthorized>
-            <h3>Not Authorized</h3>
-            <p>You are not authorized to view this page.</p>
-        </NotAuthorized>
-    </AuthorizeView>
+    </NotAuthorized>
+</AuthorizeView>
 <style>
 .list {
     margin-top: 40px;
@@ -118,7 +118,7 @@
             if (_selectedBoard != value)
             {
                 _selectedBoard = value;
-                OnSelectedBoardChanged().ConfigureAwait(false);
+                OnSelectedBoardChanged();
             }
         }
     }    
@@ -132,6 +132,7 @@
         }
         StateHasChanged();
     }
+
     private async Task LoadBoards(string user) { 
         var data = await util.GetBoards(user);
         if (util.errorOccurred)
@@ -152,26 +153,28 @@
         if (!string.IsNullOrEmpty(selectedBoard))
         {
             await GetFacts();
+            StateHasChanged();
         }
     }
-private async Task GetFacts()
-{
-    isLoading = true;
-    isReady = false;
-    errorOccurred = false;
-    StateHasChanged();
 
-    var newFacts = await util.GetFacts("");
+    private async Task GetFacts()
+    {
+        isLoading = true;
+        isReady = false;
+        errorOccurred = false;
+        StateHasChanged();
 
-    errorOccurred = util.errorOccurred;
-    statusMessage = util.statusMessage;
+        var newFacts = await util.GetFacts(selectedBoard);
 
-    if (!errorOccurred) facts = newFacts;
+        errorOccurred = util.errorOccurred;
+        statusMessage = util.statusMessage;
 
-    isLoading = false;
-    isReady = !errorOccurred;
-    StateHasChanged();
-}
+        if (!errorOccurred) facts = newFacts;
+
+        isLoading = false;
+        isReady = !errorOccurred;
+        StateHasChanged();
+    }
 
 
 }

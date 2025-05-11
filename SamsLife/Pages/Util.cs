@@ -118,13 +118,12 @@ public class Util
         }
     }
     public async Task<List<string>> GetFacts(string boardId)
-
     {
         var responses = new List<string>();
         reset();
 
         try {
-            var httpResponse = await client.GetAsync("api/getFacts?boardId=" + boardId);
+            var httpResponse = await client.GetAsync("api/getFacts?bid=" + boardId);
 
             httpResponse.EnsureSuccessStatusCode();
             var response = await httpResponse.Content.ReadAsStringAsync();
