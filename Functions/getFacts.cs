@@ -26,9 +26,12 @@ namespace Functions
                 SqlQuery = "SELECT * FROM c where c.Delete = false and c.boardId = '{bid}'",
                 Connection = "dbstr")] IEnumerable<SamFact> allFacts,
             string bid,
-            ILogger log)
+            FunctionContext context) // Use FunctionContext for logging
         {
+            // Access the logger from the FunctionContext
+            var logger = context.GetLogger("getFacts");
             log.LogInformation($"C# HTTP trigger function processed a request. {bid}");
+
             List<string> facts = new List<string>();
 
             foreach (var sf in allFacts) {
