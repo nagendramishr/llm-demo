@@ -123,7 +123,7 @@ public class Util
         reset();
 
         try {
-            var httpResponse = await client.GetAsync("api/getFacts?bid=" + boardId);
+            var httpResponse = await client.GetAsync("api/getFacts/bid=" + boardId);
 
             httpResponse.EnsureSuccessStatusCode();
             var response = await httpResponse.Content.ReadAsStringAsync();
