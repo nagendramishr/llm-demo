@@ -13,7 +13,6 @@
 <PageTitle>Index</PageTitle>
 
 <h1>Fact Analyzer!</h1>
-
 @if (isReady) {
 
     <p>In this interactive session, you're a key part of our discovery process. As our presenter guides you, please share the facts you know by entering them below. Once submitted, OpenAI’s generative AI will analyze your input to reveal insightful connections and patterns. </p>
@@ -125,7 +124,7 @@ else if (isDoneSubmitting) {
 
         await util.addFact(boardId, inputString);
 
-        await Task.Delay(3000);
+        await Task.Delay(1000);
 
         if (util.errorOccurred) {
             errorOccurred = true;
