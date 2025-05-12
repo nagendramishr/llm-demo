@@ -24,7 +24,7 @@ namespace Functions
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
-                SqlQuery = "SELECT * FROM c where c.Delete = false and c.boardId = '{bid}'",
+                SqlQuery = "SELECT * FROM c where c.Delete = false",// and c.boardId = '{bid}'",
                 Connection = "dbstr")] IEnumerable<SamFact> allFacts,
             FunctionContext context) // Use FunctionContext for logging
         {
@@ -35,6 +35,9 @@ namespace Functions
             List<string> facts = new List<string>();
 
             foreach (var sf in allFacts) {
+                if (sf.boardId != bid) {
+                    continue;
+                }
             //         log.LogInformation($"ID: {sf.id} Text: {sf.text}");
                 var a = sf.Message.Trim();
                 if (a.EndsWith(".")) {
