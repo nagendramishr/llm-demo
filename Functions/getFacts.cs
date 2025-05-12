@@ -23,7 +23,7 @@ namespace Functions
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
-                SqlQuery = "SELECT * FROM c where c.Delete = false and c.boardId = '{bid}'",
+                SqlQuery = "SELECT * FROM c where c.Delete = false and c.boardId = 'c8a89dd7-1e39-4ff9-8687-40d42d09c193'",
                 Connection = "dbstr")] IEnumerable<SamFact> allFacts,
             string bid,
             FunctionContext context) // Use FunctionContext for logging
