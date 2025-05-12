@@ -29,7 +29,7 @@ namespace Functions
             FunctionContext context) // Use FunctionContext for logging
         {
             // Access the logger from the FunctionContext
-            var logger = context.GetLogger("getFacts");
+            var log = context.GetLogger("getFacts");
             log.LogInformation($"C# HTTP trigger function processed a request. {bid}");
 
             List<string> facts = new List<string>();
