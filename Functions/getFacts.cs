@@ -20,12 +20,12 @@ namespace Functions
         [Function("getFacts")]
         public IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route ="getFacts/{bid}")] HttpRequest req,
+            string bid,
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
-                SqlQuery = "SELECT * FROM c where c.Delete = false and c.boardId = 'c8a89dd7-1e39-4ff9-8687-40d42d09c193'",
+                SqlQuery = "SELECT * FROM c where c.Delete = false and c.boardId = '{bid}'",
                 Connection = "dbstr")] IEnumerable<SamFact> allFacts,
-            string bid,
             FunctionContext context) // Use FunctionContext for logging
         {
             // Access the logger from the FunctionContext
