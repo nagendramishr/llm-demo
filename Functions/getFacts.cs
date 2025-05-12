@@ -25,8 +25,10 @@ namespace Functions
                 containerName: "%CosmosContainer%",
                 SqlQuery = "SELECT * FROM c where c.Delete = false and c.boardId = '{bid}'",
                 Connection = "dbstr")] IEnumerable<SamFact> allFacts,
+            string bid,
             ILogger log)
         {
+            log.LogInformation($"C# HTTP trigger function processed a request. {bid}");
             List<string> facts = new List<string>();
 
             foreach (var sf in allFacts) {
