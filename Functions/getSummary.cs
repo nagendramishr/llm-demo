@@ -31,11 +31,11 @@ namespace Functions
 
         [Function("getSummary")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route ="getSummary/{bid}"))] HttpRequest req,
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
-                SqlQuery = "SELECT * FROM c where c.Delete = false",
+                SqlQuery = "SELECT * FROM c where c.Delete = false and c.boardId = '{bid}'",
                 Connection = "dbstr")] IEnumerable<SamFact> allFacts,
             ILogger log
         )
