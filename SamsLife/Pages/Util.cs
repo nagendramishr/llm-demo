@@ -143,6 +143,25 @@ public class Util
         return responses!;
     }
 
+    public async Task<string> GetSummary(string boardId, string json)
+    {
+        var responses = new List<string>();
+        reset();
+
+        try {
+            var httpResponse = await client.PostAsync($"api/getSummary/{boardId}", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
+
+            httpResponse.EnsureSuccessStatusCode();
+            return await httpResponse.Content.ReadAsStringAsync();
+
+        } catch (HttpRequestException e) {
+            errorOccurred = true;
+            statusMessage = e.Message;
+            Console.WriteLine(e);
+        }
+
+        return "";
+    }
     public async Task ResetFacts(string boardId) {
         try {
             var httpResponse = await client.GetAsync("api/resetDB?boardId=" + boardId);

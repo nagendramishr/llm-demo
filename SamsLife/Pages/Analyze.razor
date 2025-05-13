@@ -203,7 +203,8 @@
     {   
         users = Configuration.GetSection("AllowedUsers").Value.Split(",").ToList();
     }
-    private static HttpClient? sharedClient;    
+    //private static HttpClient? sharedClient;    
+
     private async Task runQuery( string inputString)
     {
         queryText = inputString;
@@ -213,27 +214,27 @@
         isLoading = true;
         StateHasChanged();
 
-        if (sharedClient == null)
-        {
-            var SamFuncHost = Configuration["SamFunction:Hostname"];
-            var SamAuth = Configuration["SamFunction:FunctionKey"];
-
-            sharedClient = new HttpClient();
-            sharedClient.BaseAddress = new Uri($"https://{SamFuncHost}");
-            sharedClient.DefaultRequestHeaders.Add("x-functions-key", SamAuth);
-        }
-
         try {
             var sf = new Query() { Text = queryText };
             string json = System.Text.Json.JsonSerializer.Serialize(sf);
 
-            var httpResponse =
+            var response = await util.GetSummary(_selectedBoard, json);
+            if (util.errorOccurred)
+            {
+                errorOccurred = true;
+                statusMessage = util.statusMessage;
+                isLoading = false;
+                StateHasChanged();
+                return;
+            }
+
+            @* var httpResponse =
                 await sharedClient.PostAsync($"api/getSummary/{_selectedBoard}", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
 
             Console.WriteLine ($"URL: {sharedClient.BaseAddress} Path: api/getSummary/{_selectedBoard} Response: {httpResponse.StatusCode}");
 
             httpResponse.EnsureSuccessStatusCode();
-            response = await httpResponse.Content.ReadAsStringAsync();
+            response = await httpResponse.Content.ReadAsStringAsync(); *@
 
             // Parse the response to get the response text
             // SAMPLE:
