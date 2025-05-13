@@ -152,7 +152,9 @@ public class Util
             var httpResponse = await client.PostAsync($"api/getSummary/{boardId}", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
 
             httpResponse.EnsureSuccessStatusCode();
-            return await httpResponse.Content.ReadAsStringAsync();
+            string response = await httpResponse.Content.ReadAsStringAsync();
+
+            return response;
 
         } catch (HttpRequestException e) {
             errorOccurred = true;

@@ -3,6 +3,9 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using System.Net.Http
 @using System.Text.Json
+@using System.Text.Json.Serialization
+@using System.Text.RegularExpressions
+
 @inject ProtectedLocalStorage BrowserStorage
 @inject IConfiguration Configuration
 @inject Util util
@@ -12,6 +15,10 @@
 <PageTitle>Index</PageTitle>
 
 <AuthorizeView>
+    <NotAuthorized>
+        <p>You are not authenticated.</p>
+        <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=%2Fanalyze">Login</a></p>
+    </NotAuthorized>
     <Authorized>
         @{
             users = Configuration.GetSection("AllowedUsers")?.Value.Split(",").ToList() ?? new List<string>();
@@ -137,12 +144,8 @@
                     <p>@statusMessage</p>
                 }
             }
-}
+        }
     </Authorized>
-    <NotAuthorized>
-        <p>You are not authenticated.</p>
-        <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=%2Fanalyze">Login</a></p>
-    </NotAuthorized>
 </AuthorizeView>
 
 @code {
@@ -218,7 +221,7 @@
             var sf = new Query() { Text = queryText };
             string json = System.Text.Json.JsonSerializer.Serialize(sf);
 
-            var response = await util.GetSummary(_selectedBoard, json);
+            response = await util.GetSummary(_selectedBoard, json);
             if (util.errorOccurred)
             {
                 errorOccurred = true;
@@ -228,43 +231,24 @@
                 return;
             }
 
-            @* var httpResponse =
-                await sharedClient.PostAsync($"api/getSummary/{_selectedBoard}", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
-
-            Console.WriteLine ($"URL: {sharedClient.BaseAddress} Path: api/getSummary/{_selectedBoard} Response: {httpResponse.StatusCode}");
-
-            httpResponse.EnsureSuccessStatusCode();
-            response = await httpResponse.Content.ReadAsStringAsync(); *@
-
-            // Parse the response to get the response text
-            // SAMPLE:
-            @* {"CreatedAt": "...","FinishReason": 0, "ContentTokenLogProbabilities": [], "RefusalTokenLogProbabilities": [], "Role": 2,
-  "Content": [{"Kind": 0, "Text": "...", "ImageUri": null, "ImageBytes": null,"ImageBytesMediaType": null,"ImageDetailLevel": null,"Refusal": null}],
-  "ToolCalls": [], "Refusal": null, "FunctionCall": null, "Id": "...",  "Model": "...", "SystemFingerprint": "...", 
-  "Usage": { "OutputTokenCount": 71, "InputTokenCount": 96, "TotalTokenCount": 167, "OutputTokenDetails": {"ReasoningTokenCount": 0,"AudioTokenCount": 0},
-    "InputTokenDetails": {"AudioTokenCount": 0,"CachedTokenCount": 0}}} *@
-
-            // Parse the response to get the response text
-            using (JsonDocument doc = JsonDocument.Parse(response))
+            // The response is a JSON string within a string, so we need to unescape it first
+            if (response.StartsWith("\"") && response.EndsWith("\""))
             {
-                JsonElement root = doc.RootElement;
-                JsonElement content = root.GetProperty("Content");
-                JsonElement firstContent = content[0];
-                response = firstContent.GetProperty("Text").GetString().Trim().Substring(7); // remove the BOM:  "```html"
-                response = response.Substring(0, response.Length - 3); // remove the closing "```"
-
-                // copy usage out to a dictionary
-                JsonElement usageElement = root.GetProperty("Usage");
-                // iterate over the properties of the usage element
-                foreach (JsonProperty property in usageElement.EnumerateObject())
-                {
-                    // add each property to the usage dictionary
-                    usage[property.Name] = property.Value.ToString();
-                }
+                // Remove outer quotes and unescape the inner JSON
+                response = JsonSerializer.Deserialize<string>(response)!;
             }
 
-            
+            OpenAIData data = JsonSerializer.Deserialize<OpenAIData>(response)!;
+            if (data != null)
+            {
+                response = data.Content[0].Text.Trim().Substring(7); // remove the BOM:  "```html"
+                response = response.Substring(0, response.Length - 3); // remove the closing "```"
 
+                usage["OutputTokenCount"] = data.Usage.OutputTokenCount.ToString();
+                usage["InputTokenCount"] = data.Usage.InputTokenCount.ToString();
+                usage["TotalTokenCount"] = data.Usage.TotalTokenCount.ToString();
+            }
+           
             isLoading = false;
             StateHasChanged();
 
@@ -276,7 +260,14 @@
 
         StateHasChanged();
     }
-
+JsonSerializerOptions options = new JsonSerializerOptions
+{
+    PropertyNameCaseInsensitive = true,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    AllowTrailingCommas = true,
+    ReadCommentHandling = JsonCommentHandling.Skip,
+    IgnoreReadOnlyProperties = true
+};
     private async Task LoadBoards(string user) { 
         var data = await util.GetBoards(user);
         if (util.errorOccurred)
