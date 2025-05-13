@@ -230,7 +230,7 @@
             var httpResponse =
                 await sharedClient.PostAsync($"api/getSummary/{_selectedBoard}", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
 
-            Console.WriteLine ($"Response: {httpResponse.StatusCode}");
+            Console.WriteLine ($"URL: {sharedClient.BaseAddress} Path: api/getSummary/{_selectedBoard} Response: {httpResponse.StatusCode}");
 
             httpResponse.EnsureSuccessStatusCode();
             response = await httpResponse.Content.ReadAsStringAsync();
