@@ -5,6 +5,7 @@
 @using System.Text.Json
 @using Microsoft.AspNetCore.WebUtilities
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UrlHashHelper UrlHashHelper
 @inject ProtectedLocalStorage BrowserStorage
 @inject IConfiguration Configuration
@@ -19,114 +20,101 @@
     </NotAuthorized>
     <Authorized>
 
-    @{
-        users = Configuration.GetSection("AllowedUsers")?.Value.Split(",").ToList() ?? new List<string>();
-        hasAccess = false;
+        <h1>All The Facts:</h1>
 
-        var user = context?.User?.Identity?.Name ?? "";
-        if (!string.IsNullOrEmpty(user))
-        {
-            foreach (var usr in users)
-            {
-                if (usr.ToString().Trim() == user.Trim())
+        <div class="button" @onclick="@(async () => await GetBoards(user))">Refresh</div>
+        <div class="boards">
+            <span>Please select a board to view the facts:</span>
+            <select @bind="selectedBoard" @bind:event="onchange">
+                <option value="">Select a board</option>
+                @foreach (var board in boards)
                 {
-                    hasAccess = true;
-                    break;
+                    <option value="@board.id">@board.Title</option>
                 }
-            }
-
-        } else {
-            <p>Sorry, you do not have access to this page.</p>
-        }
-    }
-
-    <h1>All The Facts:</h1>
-
-    <div class="button" @onclick="@( async() => await LoadBoards(user))">Refresh</div>
-    <div class="boards">
-    <span>Please select a board to view the facts:</span>
-        <select @bind="selectedBoard" @bind:event="onchange">
-            <option value="">Select a board</option>
-            @foreach (var board in boards)
-            {
-                <option value="@board.id">@board.Title</option>
-            }
-        </select>
-    </div>
-
-    @if (errorOccurred) {
-        <p>@errorMessage</p>
-
-    }
-
-    @if (isReady) {
-        <hr>
-        <div class="list">
-            @foreach (string fact in facts)
-            {
-                <div class="fact">
-                        @fact
-                </div>
-            }
+            </select>
         </div>
-    }
-    else if (isLoading) {
-        <p>Loading...  @selectedBoard</p>
-    }
 
-    @if (errorOccurred) {
-        <p>@statusMessage</p>
+        @if (errorOccurred)
+        {
+            <p>@errorMessage</p>
 
-    }
+        }
+
+        @if (isReady)
+        {
+            <hr>
+            <div class="list">
+                @foreach (string fact in facts)
+                {
+                    <div class="fact">
+                        @fact
+                    </div>
+                }
+            </div>
+        }
+        else if (isLoading)
+        {
+            <p>Loading... @selectedBoard</p>
+        }
+
+        @if (errorOccurred)
+        {
+            <p>@statusMessage</p>
+
+        }
 
     </Authorized>
 </AuthorizeView>
 <style>
-.list {
-    margin-top: 40px;
-    display: flex;
-    flex-direction:column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    height: 80%; /* Set a fixed height for the list */
-    overflow-y: auto; /* Add vertical scrollbar */
-    width: 60%;
-}
-.fact {
-    background-color: #f8f9fa;
-    color: #212529;
-    padding: 8px 16px;
-    border-radius: 0px;
-    border: 1px solid #ced4da;
-    display: inline-block;
-    cursor: pointer;
-    text-align: left;
-    user-select: none;
-    height: auto;;
-    margin-bottom: 0px;
-    width: 100%;
-    word-wrap: break-word;
-}
-.button {
-    background-color: #007bff;
-    color: #ffffff;
-    padding: 8px 16px;
-    border-radius: 4px;
-    display: inline-block;
-    cursor: pointer;
-    text-align: center;
-    user-select: none;
-    height: 40px;
-}
+    .list {
+        margin-top: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        height: 80%;
+        /* Set a fixed height for the list */
+        overflow-y: auto;
+        /* Add vertical scrollbar */
+        width: 60%;
+    }
 
-.button-like:hover {
-    background-color: #0056b3;
-}
+    .fact {
+        background-color: #f8f9fa;
+        color: #212529;
+        padding: 8px 16px;
+        border-radius: 0px;
+        border: 1px solid #ced4da;
+        display: inline-block;
+        cursor: pointer;
+        text-align: left;
+        user-select: none;
+        height: auto;
+        ;
+        margin-bottom: 0px;
+        width: 100%;
+        word-wrap: break-word;
+    }
+
+    .button {
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 8px 16px;
+        border-radius: 4px;
+        display: inline-block;
+        cursor: pointer;
+        text-align: center;
+        user-select: none;
+        height: 40px;
+    }
+
+    .button-like:hover {
+        background-color: #0056b3;
+    }
 </style>
 
 @code {
-    bool hasAccess = false;
-
+    string user = string.Empty;
     List<Board> boards = new List<Board>();
     List<string> users = new List<string>();
     List<string> facts = new List<string>();
@@ -148,11 +136,11 @@
                 OnSelectedBoardChanged();
             }
         }
-    }    
+    }
 
     // Clean this up LATER!!!! .. basically, I think there is a round trip here that is not needed.
     protected async Task OnAfterRenderAsync() // = On Page Load
-    {   
+    {
         if (isReady == false && isLoading == false)
         {
             @* await LoadBoards(); *@
@@ -160,7 +148,8 @@
         StateHasChanged();
     }
 
-    private async Task LoadBoards(string user) { 
+    private async Task GetBoards(string user)
+    {
         var data = await util.GetBoards(user);
         if (util.errorOccurred)
         {
@@ -206,31 +195,63 @@
     private string boardId;
     private string hash;
     private bool isValidUrl = false;
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        try {
-
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var query = QueryHelpers.ParseQuery(uri.Query);
-
-        if (query.TryGetValue("bid", out var bidParam) && query.TryGetValue("hash", out var hashParam))
+        try
         {
-            boardId = bidParam!;
-            hash = hashParam!;
 
-            @* // Validate the hash *@
-            isValidUrl = UrlHashHelper.VerifyHash(boardId, hash);
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            var query = QueryHelpers.ParseQuery(uri.Query);
+
+            if (query.TryGetValue("bid", out var bidParam) && query.TryGetValue("hash", out var hashParam))
+            {
+                boardId = bidParam!;
+                hash = hashParam!;
+
+                @* // Validate the hash *@
+                isValidUrl = UrlHashHelper.VerifyHash(boardId, hash);
+            }
+            else
+            {
+                @* // Handle missing parameters *@
+                isValidUrl = false;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            @* // Handle missing parameters *@
-            isValidUrl= false;
-        }
-        } catch (Exception ex) {
             errorOccurred = true;
             errorMessage = ex.Message;
             Console.WriteLine(ex);
+        }
+
+        // Get allowed users from configuration
+        var users = Configuration.GetSection("AllowedUsers")?.Value.Split(",").ToList() ?? new List<string>();
+
+        // Option 1: Use hardcoded user (as in your current code)
+        //user = "nmishr@microsoft.com";
+
+        // Option 2: Get authenticated user (uncomment to use this instead)
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User?.Identity?.Name ?? "";
+
+        // Check authorization
+        bool authorized = false;
+        if (!string.IsNullOrEmpty(user))
+        {
+            foreach (var usr in users)
+            {
+                if (usr.ToString().Trim() == user.Trim())
+                {
+                    authorized = true;
+                    break;
+                }
+            }
+
+            // Only load boards if user is authorized
+            if (authorized)
+            {
+                await GetBoards(user);
+            }
         }
     }
 }
