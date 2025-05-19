@@ -18,7 +18,7 @@
         <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=%2Fanalyze">Login</a></p>
         @{
             user = "";
-            authorized=false;
+            authorized = false;
         }
     </NotAuthorized>
     <Authorized>
@@ -38,14 +38,17 @@
                     }
                 }
 
-            } else {
+            }
+            else
+            {
                 <p>Sorry, you do not have access to this page.</p>
             }
+            GetBoards(user).Wait();
         }
 
         <h3>Admin Panel</h3>
 
-        <button class="btn btn-danger" @onclick="async() => await ResetDatabase(user)">Reset Database</button>
+        @* <button class="btn btn-danger" @onclick="async() => await ResetDatabase(user)">Reset Database</button> *@
 
         <hr>
         <h4>Boards</h4>
@@ -68,45 +71,51 @@
                     <button class="btn btn-danger addBoardBtn" @onclick="async () => await AddBoard(user)">Add</button>
                 }
 
-                @if (boards != null && !showAddBoard)
-                {    
-                    var isEditing = new Dictionary<string, bool>();
-
-
-                    <div class="boardTitle">
-                        <span>Created</span>
-                        <span>Owner</span>
-                        <span>Title</span>
-                        <span>Hidden</span>
-                        <span>Link</span>
-                    </div>
-                    @foreach (var board in boards)
+                else
+                {
+                    @if (boards != null)
                     {
-                        isEditing[board.id] = false;
-                        var title = board.Title;
+                        var isEditing = new Dictionary<string, bool>();
 
-                        <div class="boardRow" @onclick="() => { isEditing[board.id] = true; }" @onclick:stopPropagation >
-                            <span>@board.Created</span>
-                            <span>@board.Owner</span>
-                            @if (isEditing[board.id]) {
-                                <span><input type="text" placeholder="Title" @bind="@title" /></span>
-                                <span><checkbox></checkbox> Hide</span>
-                                <button class="btn btn-danger" @onclick="async () => await AddBoard(user)">Save</button>
-                            }
-                            else
-                            {
-                                var hash = UrlHashHelper.GenerateHash(board.id);
-                                var url = $"{NavigationManager.BaseUri}?bid={board.id}&hash={hash}";
-
-                                <span>@board.Title</span>
-                                <span><a href="@url">Link</a></span>
-                            }
+                        <div class="boardTitle">
+                            <span>Created</span>
+                            <span>Owner</span>
+                            <span>Title</span>
+                            <span>Hidden</span>
+                            <span>Link</span>
                         </div>
+                        
+                        @foreach (var board in boards)
+                        {
+                            isEditing[board.id] = false;
+                            var title = board.Title;
+
+                            <div class="boardRow" @onclick="() => { isEditing[board.id] = true; }" @onclick:stopPropagation>
+                                <span>@board.Created</span>
+                                <span>@board.Owner</span>
+                                @if (isEditing[board.id])
+                                {
+                                    <span><input type="text" placeholder="Title" @bind="@title" /></span>
+                                    <span>
+                                        <checkbox></checkbox> Hide
+                                    </span>
+                                    <button class="btn btn-danger" @onclick="async () => await AddBoard(user)">Save</button>
+                                }
+                                else
+                                {
+                                    var hash = UrlHashHelper.GenerateHash(board.id);
+                                    var url = $"{NavigationManager.BaseUri}?bid={board.id}&hash={hash}";
+
+                                    <span>@board.Title</span>
+                                    <span><a href="@url">Link</a></span>
+                                }
+                            </div>
+                        }
                     }
                 }
             </div>
         }
-                
+
         @if (boards == null || boards.Count == 0)
         {
             <p>No boards loaded.</p>
@@ -166,7 +175,8 @@
         StateHasChanged();
     }
 
-    private async Task AddBoard(string user) {
+    private async Task AddBoard(string user)
+    {
         var b = new Board
         {
             Created = DateTime.Now,
