@@ -170,7 +170,6 @@
     List<Board> boards = new List<Board>();
 
     List<string> users = new List<string>();
-    string format=$" Answer in both English and {selectedLanguage}. Return the response in HTML format where the content can be copied into a span tag.";
     Dictionary<string, string> queries = new Dictionary<string, string>
     {
         { "Summary", "Use the facts below to create a summary of the character's life in a compact way without sacrificing readability." +
@@ -221,6 +220,8 @@
         statusMessage = "";
         isLoading = true;
         StateHasChanged();
+
+        string format=$" Answer in both English and {selectedLanguage}. Return the response in HTML format where the content can be copied into a span tag.";
 
         try {
             var sf = new Query() { Text = queryText  + format};
