@@ -31,16 +31,29 @@ namespace Functions
 
         [Function("getSummary")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "getSummary/{bid}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route ="getFacts/{bid}")] HttpRequest req,
             string bid,
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
-                SqlQuery = "SELECT * FROM c where c.Delete = false and c.boardId = '{bid}'",
+                SqlQuery = "SELECT * FROM c where c.Delete = false",// and c.boardId = '{bid}'",
                 Connection = "dbstr")] IEnumerable<SamFact> allFacts,
             ILogger log
         )
         {
+            int allFactCount = allFacts?.Count() ?? 0;
+            _logger.LogInformation($"GetSummary: Retrieved {allFactCount} facts from CosmosDB");
+
+            // filter out the facts that do not match the boardId
+            List<SamFact> filteredFacts = new List<SamFact>();
+            foreach (var sf in allFacts)
+            {
+                if (sf.BoardId == bid)
+                {
+                    filteredFacts.Add(sf);
+                }
+            }
+
             // Parse the request body
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
@@ -48,7 +61,7 @@ namespace Functions
             _logger.LogInformation("GetSummary: Retrieving facts for boardId: {bid}", bid);
 
             // Log CosmosDB query information
-            int factCount = allFacts?.Count() ?? 0;
+            int factCount = filteredFacts?.Count() ?? 0;
             _logger.LogInformation("GetSummary: Retrieved {factCount} facts from CosmosDB", factCount);
 
             if (factCount == 0)
@@ -61,7 +74,7 @@ namespace Functions
                 int samplesToLog = Math.Min(factCount, 3);
                 for (int i = 0; i < samplesToLog; i++)
                 {
-                    _logger.LogInformation("GetSummary: Sample fact {i}: {message}", i, allFacts.ElementAt(i).Message);
+                    _logger.LogInformation("GetSummary: Sample fact {i}: {message}", i, filteredFacts.ElementAt(i).Message);
                 }
             }
 
@@ -74,7 +87,7 @@ namespace Functions
             sb.AppendLine(data.Text);
             sb.AppendLine("Facts: ");
 
-            foreach (var sf in allFacts)
+            foreach (var sf in filteredFacts)
             {
                 var a = sf.Message.Trim();
                 if (a.EndsWith(".") || a.EndsWith("?") || a.EndsWith("!"))
