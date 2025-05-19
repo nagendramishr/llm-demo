@@ -1,0 +1,37 @@
+{
+  "CreatedAt": "2025-05-13T15:53:35+00:00",
+  "FinishReason": 0,
+  "ContentTokenLogProbabilities": [],
+  "RefusalTokenLogProbabilities": [],
+  "Role": 2,
+  "Content": [
+    {
+      "Kind": 0,
+      "Text": "<span>Born in a small village to a family of bakers, the character showed a love for storytelling at a young age, often narrating grand adventures to their pet goat, who undoubtedly became the most well-informed goat in the region. They embarked on a journey to become a bard, only to discover they were tone-deaf\u2014though their enthusiasm was unmatched. Undeterred, they became a traveling storyteller, collecting tales and sharing them with anyone willing to listen, even if some listeners were only there for the free snacks. Along the way, they accidentally started a dance craze involving juggling baguettes (a nod to their baking roots). Now semi-famous, they continue to wander the land, leaving behind a trail of laughter, crumbs, and confused goats.</span>```",
+      "ImageUri": null,
+      "ImageBytes": null,
+      "ImageBytesMediaType": null,
+      "ImageDetailLevel": null,
+      "Refusal": null
+    }
+  ],
+  "ToolCalls": [],
+  "Refusal": null,
+  "FunctionCall": null,
+  "Id": "chatcmpl-BWmEhvRVQ4JiyCzVAKdg19u3Jbqq7",
+  "Model": "gpt-4o-2024-11-20",
+  "SystemFingerprint": "fp_ee1d74bde0",
+  "Usage": {
+    "OutputTokenCount": 160,
+    "InputTokenCount": 85,
+    "TotalTokenCount": 245,
+    "OutputTokenDetails": {
+      "ReasoningTokenCount": 0,
+      "AudioTokenCount": 0
+    },
+    "InputTokenDetails": {
+      "AudioTokenCount": 0,
+      "CachedTokenCount": 0
+    }
+  }
+}
