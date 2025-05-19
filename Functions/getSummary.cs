@@ -32,6 +32,7 @@ namespace Functions
         [Function("getSummary")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "getSummary/{bid}")] HttpRequest req,
+            string bid,
             [CosmosDBInput(
                 databaseName: "%CosmosDb%",
                 containerName: "%CosmosContainer%",
@@ -63,7 +64,7 @@ namespace Functions
                     _logger.LogInformation("GetSummary: Sample fact {i}: {message}", i, allFacts.ElementAt(i).Message);
                 }
             }
-            
+
             var data = JsonSerializer.Deserialize<Query>(requestBody);
             if (data == null || string.IsNullOrEmpty(data.Text))
             {
