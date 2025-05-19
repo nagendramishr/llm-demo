@@ -43,7 +43,6 @@
             {
                 <p>Sorry, you do not have access to this page.</p>
             }
-            GetBoards(user).Wait();
         }
 
         <h3>Admin Panel</h3>
@@ -84,7 +83,7 @@
                             <span>Hidden</span>
                             <span>Link</span>
                         </div>
-                        
+
                         @foreach (var board in boards)
                         {
                             isEditing[board.id] = false;
@@ -133,6 +132,13 @@
     private bool authorized;
     private string user;
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(user))
+        {
+            await GetBoards(user);
+        }
+    }
     private async Task ResetDatabase(string boardId)
     {
         await util.ResetFacts(boardId);
