@@ -6,6 +6,7 @@
 @using System.Text.Json.Serialization
 @using System.Text.RegularExpressions
 
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ProtectedLocalStorage BrowserStorage
 @inject IConfiguration Configuration
 @inject Util util
@@ -18,34 +19,17 @@
     <NotAuthorized>
         <p>You are not authenticated.</p>
         <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=%2Fanalyze">Login</a></p>
+        user = "";
+        authorized = false;
     </NotAuthorized>
     <Authorized>
         @{
-            users = Configuration.GetSection("AllowedUsers")?.Value.Split(",").ToList() ?? new List<string>();
-            hasAccess = false;
-
-            var user = context?.User?.Identity?.Name ?? "";
-            if (!string.IsNullOrEmpty(user))
-            {
-                foreach (var usr in users)
-                {
-                    if (usr.ToString().Trim() == user.Trim())
-                    {
-                        hasAccess = true;
-                        break;
-                    }
-                }
-
-            } else {
-                <p>Sorry, you do not have access to this page.</p>
-            }
-
-            if (hasAccess)
+            if (authorized)
             {
 
                 <h1>Analyze the Facts!</h1>
 
-                <div class="button" @onclick="@( async() => await LoadBoards(user))">Refresh</div>
+                <div class="button" @onclick="@( async() => await GetBoards(user))">Refresh</div>
                 <div class="boards">
                 <span>Please select a board for the analysis:</span>
                     <select @bind="selectedBoard" @bind:event="onchange">
@@ -149,7 +133,8 @@
 </AuthorizeView>
 
 @code {
-    bool hasAccess = false;
+    bool authorized = false;
+    string user = string.Empty;
     private string _selectedBoard = string.Empty;
     private string selectedBoard
     {
@@ -205,10 +190,7 @@
     Dictionary<string, string> usage = new Dictionary<string, string>();
 
     bool isLoading = false;
-    protected async Task OnAfterRenderAsync() // = On Page Load
-    {   
-        users = Configuration.GetSection("AllowedUsers").Value.Split(",").ToList();
-    }
+
     //private static HttpClient? sharedClient;    
 
     private async Task runQuery( string inputString)
@@ -271,7 +253,7 @@ JsonSerializerOptions options = new JsonSerializerOptions
     ReadCommentHandling = JsonCommentHandling.Skip,
     IgnoreReadOnlyProperties = true
 };
-    private async Task LoadBoards(string user) { 
+    private async Task GetBoards(string user) { 
         var data = await util.GetBoards(user);
         if (util.errorOccurred)
         {
@@ -283,5 +265,38 @@ JsonSerializerOptions options = new JsonSerializerOptions
         }
         boards = data;
         StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get allowed users from configuration
+        var users = Configuration.GetSection("AllowedUsers")?.Value.Split(",").ToList() ?? new List<string>();
+
+        // Option 1: Use hardcoded user (as in your current code)
+        //user = "nmishr@microsoft.com";
+
+        // Option 2: Get authenticated user (uncomment to use this instead)
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User?.Identity?.Name ?? "";
+
+        // Check authorization
+        authorized = false;
+        if (!string.IsNullOrEmpty(user))
+        {
+            foreach (var usr in users)
+            {
+                if (usr.ToString().Trim() == user.Trim())
+                {
+                    authorized = true;
+                    break;
+                }
+            }
+
+            // Only load boards if user is authorized
+            if (authorized)
+            {
+                await GetBoards(user);
+            }
+        }
     }
 }
