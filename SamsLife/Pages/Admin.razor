@@ -7,18 +7,42 @@
 @inject Util util
 @inject NavigationManager NavigationManager
 @inject UrlHashHelper UrlHashHelper
+@inject IConfiguration Configuration
+
 @using System.Text.Json
 @attribute [Authorize]
 
 <AuthorizeView>
+    <NotAuthorized>
+        <p>You are not authenticated.</p>
+        <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=%2Fanalyze">Login</a></p>
+        @{
+            user = "";
+            authorized=false;
+        }
+    </NotAuthorized>
     <Authorized>
 
         @{
-            user = context?.User?.Identity?.Name ?? "";
-            authorized=true;
+            var users = Configuration.GetSection("AllowedUsers")?.Value.Split(",").ToList() ?? new List<string>();
+            user = //context?.User?.Identity?.Name ?? "";
+            "nmishr@microsoft.com";
+            if (!string.IsNullOrEmpty(user))
+            {
+                foreach (var usr in users)
+                {
+                    if (usr.ToString().Trim() == user.Trim())
+                    {
+                        authorized = true;
+                        break;
+                    }
+                }
+
+            } else {
+                <p>Sorry, you do not have access to this page.</p>
+            }
         }
 
-@* @if(authorized) { *@
         <h3>Admin Panel</h3>
 
         <button class="btn btn-danger" @onclick="async() => await ResetDatabase(user)">Reset Database</button>
@@ -89,17 +113,7 @@
         }
 
         <p>@statusMessage</p>
-@* } *@
-
     </Authorized>
-    <NotAuthorized>
-        <p>You are not authenticated.</p>
-        <p><a href="/MicrosoftIdentity/Account/SignIn?returnUrl=%2Fanalyze">Login</a></p>
-        @{
-            user = "";
-            authorized=false;
-        }
-    </NotAuthorized>
 </AuthorizeView>
 @code {
     private string statusMessage = string.Empty;
