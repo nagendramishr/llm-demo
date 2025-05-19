@@ -29,7 +29,6 @@
 
                 <h1>Analyze the Facts!</h1>
 
-                <div class="button" @onclick="@( async() => await GetBoards(user))">Refresh</div>
                 <div class="boards">
                 <span>Please select a board for the analysis:</span>
                     <select @bind="selectedBoard" @bind:event="onchange">
