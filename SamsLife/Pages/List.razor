@@ -20,47 +20,53 @@
     </NotAuthorized>
     <Authorized>
 
-        <h1>All The Facts:</h1>
-
-        <div class="button" @onclick="@(async () => await GetBoards(user))">Refresh</div>
-        <div class="boards">
-            <span>Please select a board to view the facts:</span>
-            <select @bind="selectedBoard" @bind:event="onchange">
-                <option value="">Select a board</option>
-                @foreach (var board in boards)
-                {
-                    <option value="@board.id">@board.Title</option>
-                }
-            </select>
-        </div>
-
-        @if (errorOccurred)
+        @if (authorized == false)
         {
-            <p>@errorMessage</p>
-
+            <p>Sorry, you do not have access to this page.</p>
         }
 
-        @if (isReady)
+        else
         {
-            <hr>
-            <div class="list">
-                @foreach (string fact in facts)
-                {
-                    <div class="fact">
-                        @fact
-                    </div>
-                }
+            <h1>All The Facts:</h1>
+
+            <div class="boards">
+                <span>Please select a board to view the facts:</span>
+                <select @bind="selectedBoard" @bind:event="onchange">
+                    <option value="">Select a board</option>
+                    @foreach (var board in boards)
+                    {
+                        <option value="@board.id">@board.Title</option>
+                    }
+                </select>
             </div>
-        }
-        else if (isLoading)
-        {
-            <p>Loading... @selectedBoard</p>
-        }
 
-        @if (errorOccurred)
-        {
-            <p>@statusMessage</p>
+            @if (errorOccurred)
+            {
+                <p>@errorMessage</p>
+            }
 
+            @if (isReady)
+            {
+                <hr>
+                <div class="list">
+                    @foreach (string fact in facts)
+                    {
+                        <div class="fact">
+                            @fact
+                        </div>
+                    }
+                </div>
+            }
+            else if (isLoading)
+            {
+                <p>Loading... @selectedBoard</p>
+            }
+
+            @if (errorOccurred)
+            {
+                <p>@statusMessage</p>
+
+            }
         }
 
     </Authorized>
@@ -114,6 +120,7 @@
 </style>
 
 @code {
+    bool authorized = false;
     string user = string.Empty;
     List<Board> boards = new List<Board>();
     List<string> users = new List<string>();
@@ -235,7 +242,7 @@
         user = authState.User?.Identity?.Name ?? "";
 
         // Check authorization
-        bool authorized = false;
+        authorized = false;
         if (!string.IsNullOrEmpty(user))
         {
             foreach (var usr in users)
