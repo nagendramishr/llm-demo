@@ -206,6 +206,8 @@
             statusMessage = util.statusMessage;
             StateHasChanged();
             return;
+        } else {
+            showAddBoard = false;
         }
         await GetBoards(user); // Refresh the board list
         StateHasChanged();
