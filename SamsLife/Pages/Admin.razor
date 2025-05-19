@@ -8,6 +8,7 @@
 @inject NavigationManager NavigationManager
 @inject UrlHashHelper UrlHashHelper
 @inject IConfiguration Configuration
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @using System.Text.Json
 @attribute [Authorize]
@@ -126,8 +127,8 @@
         //user = "nmishr@microsoft.com";
 
         // Option 2: Get authenticated user (uncomment to use this instead)
-        // var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        // user = authState.User?.Identity?.Name ?? "";
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User?.Identity?.Name ?? "";
 
         // Check authorization
         authorized = false;
