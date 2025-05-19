@@ -40,9 +40,11 @@ namespace Functions
             ILogger log
         )
         {
-            _logger.LogInformation("GetSummary:");
             // Parse the request body
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+            _logger.LogInformation("GetSummary: " + requestBody);
+
             var data = JsonSerializer.Deserialize<Query>(requestBody);
             if (data == null || string.IsNullOrEmpty(data.Text))
             {
@@ -54,7 +56,7 @@ namespace Functions
 
             foreach (var sf in allFacts) {
                 var a = sf.Message.Trim();
-                if (a.EndsWith(".")) {
+                if (a.EndsWith(".") || a.EndsWith("?") || a.EndsWith("!")) {
                     sb.Append(a+ " ");
                 }
                 else {
