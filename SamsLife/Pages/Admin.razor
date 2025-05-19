@@ -23,96 +23,81 @@
     </NotAuthorized>
     <Authorized>
 
-        @{
-            var users = Configuration.GetSection("AllowedUsers")?.Value.Split(",").ToList() ?? new List<string>();
-            user = //context?.User?.Identity?.Name ?? "";
-            "nmishr@microsoft.com";
-            if (!string.IsNullOrEmpty(user))
-            {
-                foreach (var usr in users)
-                {
-                    if (usr.ToString().Trim() == user.Trim())
-                    {
-                        authorized = true;
-                        break;
-                    }
-                }
-
-            }
-            else
-            {
-                <p>Sorry, you do not have access to this page.</p>
-            }
-        }
-
-        <h3>Admin Panel</h3>
-
-        @* <button class="btn btn-danger" @onclick="async() => await ResetDatabase(user)">Reset Database</button> *@
-
-        <hr>
-        <h4>Boards</h4>
-        <div class="boardButtons">
-            <button class="btn btn-danger" @onclick="async () => await GetBoards(user)">Load Boards</button>
-            <button class="btn btn-danger" @onclick="() => showNewBoard(user)">New Board</button>
-        </div>
-
-        @if (boards != null || showAddBoard)
+        @if (!authorized)
         {
-            <div class="boards">
+            <p>Sorry, you do not have access to this page.</p>
+        }
+        else
+        {
+            <h3>Admin Panel</h3>
 
-                @if (showAddBoard)
-                {
-                    <div class="addBoard">
-                        <span>Enter the title for the board:</span>
-                        <span><input type="text" placeholder="Title" @bind="newBoardTitle" /></span>
-                    </div>
+            @* <button class="btn btn-danger" @onclick="async() => await ResetDatabase(user)">Reset Database</button> *@
 
-                    <button class="btn btn-danger addBoardBtn" @onclick="async () => await AddBoard(user)">Add</button>
-                }
+            <hr>
+            <h4>Boards</h4>
+            <div class="boardButtons">
+                <button class="btn btn-danger" @onclick="async () => await GetBoards(user)">Load Boards</button>
+                <button class="btn btn-danger" @onclick="() => showNewBoard(user)">New Board</button>
+            </div>
 
-                else
-                {
-                    @if (boards != null)
+            @if (boards != null || showAddBoard)
+            {
+                <div class="boards">
+
+                    @if (showAddBoard)
                     {
-                        var isEditing = new Dictionary<string, bool>();
-
-                        <div class="boardTitle">
-                            <span>Created</span>
-                            <span>Owner</span>
-                            <span>Title</span>
-                            <span>Hidden</span>
-                            <span>Link</span>
+                        <div class="addBoard">
+                            <span>Enter the title for the board:</span>
+                            <span><input type="text" placeholder="Title" @bind="newBoardTitle" /></span>
                         </div>
 
-                        @foreach (var board in boards)
+                        <button class="btn btn-danger addBoardBtn" @onclick="async () => await AddBoard(user)">Add</button>
+                    }
+
+                    else
+                    {
+                        @if (boards != null)
                         {
-                            isEditing[board.id] = false;
-                            var title = board.Title;
+                            var isEditing = new Dictionary<string, bool>();
 
-                            <div class="boardRow" @onclick="() => { isEditing[board.id] = true; }" @onclick:stopPropagation>
-                                <span>@board.Created</span>
-                                <span>@board.Owner</span>
-                                @if (isEditing[board.id])
-                                {
-                                    <span><input type="text" placeholder="Title" @bind="@title" /></span>
-                                    <span>
-                                        <checkbox></checkbox> Hide
-                                    </span>
-                                    <button class="btn btn-danger" @onclick="async () => await AddBoard(user)">Save</button>
-                                }
-                                else
-                                {
-                                    var hash = UrlHashHelper.GenerateHash(board.id);
-                                    var url = $"{NavigationManager.BaseUri}?bid={board.id}&hash={hash}";
-
-                                    <span>@board.Title</span>
-                                    <span><a href="@url">Link</a></span>
-                                }
+                            <div class="boardTitle">
+                                <span>Created</span>
+                                <span>Owner</span>
+                                <span>Title</span>
+                                <span>Hidden</span>
+                                <span>Link</span>
                             </div>
+
+                            @foreach (var board in boards)
+                            {
+                                isEditing[board.id] = false;
+                                var title = board.Title;
+
+                                <div class="boardRow" @onclick="() => { isEditing[board.id] = true; }" @onclick:stopPropagation>
+                                    <span>@board.Created</span>
+                                    <span>@board.Owner</span>
+                                    @if (isEditing[board.id])
+                                    {
+                                        <span><input type="text" placeholder="Title" @bind="@title" /></span>
+                                        <span>
+                                            <checkbox></checkbox> Hide
+                                        </span>
+                                        <button class="btn btn-danger" @onclick="async () => await AddBoard(user)">Save</button>
+                                    }
+                                    else
+                                    {
+                                        var hash = UrlHashHelper.GenerateHash(board.id);
+                                        var url = $"{NavigationManager.BaseUri}?bid={board.id}&hash={hash}";
+
+                                        <span>@board.Title</span>
+                                        <span><a href="@url">Link</a></span>
+                                    }
+                                </div>
+                            }
                         }
                     }
-                }
-            </div>
+                </div>
+            }
         }
 
         @if (boards == null || boards.Count == 0)
@@ -134,9 +119,34 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Get allowed users from configuration
+        var users = Configuration.GetSection("AllowedUsers")?.Value.Split(",").ToList() ?? new List<string>();
+
+        // Option 1: Use hardcoded user (as in your current code)
+        //user = "nmishr@microsoft.com";
+
+        // Option 2: Get authenticated user (uncomment to use this instead)
+        // var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        // user = authState.User?.Identity?.Name ?? "";
+
+        // Check authorization
+        authorized = false;
         if (!string.IsNullOrEmpty(user))
         {
-            await GetBoards(user);
+            foreach (var usr in users)
+            {
+                if (usr.ToString().Trim() == user.Trim())
+                {
+                    authorized = true;
+                    break;
+                }
+            }
+
+            // Only load boards if user is authorized
+            if (authorized)
+            {
+                await GetBoards(user);
+            }
         }
     }
     private async Task ResetDatabase(string boardId)
