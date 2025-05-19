@@ -71,6 +71,8 @@ namespace Functions
 
         async Task<string> RunQueryAsync(string prompt)  
         {  
+            _logger.LogInformation("Running with prompt: {prompt}", prompt);
+
             // Retrieve the OpenAI endpoint from environment variables
             var endpoint = GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? "";  
             if (string.IsNullOrEmpty(endpoint))  
