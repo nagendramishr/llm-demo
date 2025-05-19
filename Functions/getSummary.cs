@@ -48,7 +48,7 @@ namespace Functions
             List<SamFact> filteredFacts = new List<SamFact>();
             foreach (var sf in allFacts)
             {
-                if (sf.BoardId == bid)
+                if (sf.boardId == bid)
                 {
                     filteredFacts.Add(sf);
                 }
