@@ -47,6 +47,17 @@
                 }
                 else
                 {
+                    <p>Language:
+                        
+                        <select @bind="selectedLanguage" @bind:event="onchange">
+                            <option value="">Select a language</option>
+                            @foreach (var lang in languages)
+                            {
+                                <option value="@lang">@lang</option>
+                            }
+                        </select>
+                    </p>
+
                     <p>Let's anayze the facts's we know solid far.  Although we could let you try your own hand about this summary, we have a few 
                         pre-defined ways to summarize them.  Select one of the following:</p>
 
@@ -142,6 +153,8 @@
 @code {
     bool authorized = false;
     string user = string.Empty;
+    string[] languages = new string[] { "English", "Spanish", "French", "German", "Hindi", "Kannada", "Italian", "Portuguese", "Russian", "Chinese", "Japanese", "Korean" };
+    string selectedLanguage { get; set; } = "English";
     private string _selectedBoard = string.Empty;
     private string selectedBoard
     {
@@ -157,35 +170,35 @@
     List<Board> boards = new List<Board>();
 
     List<string> users = new List<string>();
-    static string format=" Return the response in HTML format where the content can be copied into a span tag.";
+    string format=$" Answer in both English and {selectedLanguage}. Return the response in HTML format where the content can be copied into a span tag.";
     Dictionary<string, string> queries = new Dictionary<string, string>
     {
         { "Summary", "Use the facts below to create a summary of the character's life in a compact way without sacrificing readability." +
                 "Do not add any additional information or context, but if something doesn't make sense, add a commical commentary. " +
-                "Just present the facts as if this was a biography about the character's life." + format},
+                "Just present the facts as if this was a biography about the character's life." },
         { "Critique", "Using the facts below, identify facts that dot't fit.  Explain why each one doesn't quite fit, illustrating it "+
-                "if neccessary in a comedic way.  Consolidate your response in the form of a critique." +format},
+                "if neccessary in a comedic way.  Consolidate your response in the form of a critique." },
         { "Story", "Using the facts below, generate a 3 paragraph, positive story that highlights the key themes of the facts. Ignore any negative facts and facts "+
-                "that don't pertain to the general theme of the story which is: The Impact of AI on Curry College. " +format},
-        { "Compare", "Using the facts below, compare the character's life to that of a famous person.  Use the same format as a biography." +format},
-        { "Analyze", "Using the facts below, analyze the character's life and identify any patterns or trends.  Use the scientific format." +format},
-        { "Expound", "Using the facts below, suggest activities that fit the trend but would fit in the missing gaps." +format },
-        { "Predict", "Using the facts below, predict what the character's life will be like in the future.  Use a story telling format." +format },
-        { "Review", "Using the following product reviews, create an overall rating of the product. Describe the best and worst features of the product. " +format},
-        { "Picture", "Using the facts below, create a prompt that can be used to generate a picture about the characters life.  Be as vivid as possible but less than 4 sentences." +format },
+                "that don't pertain to the general theme of the story which is: The Impact of AI on Curry College. " },
+        { "Compare", "Using the facts below, compare the character's life to that of a famous person.  Use the same format as a biography."},
+        { "Analyze", "Using the facts below, analyze the character's life and identify any patterns or trends.  Use the scientific format." },
+        { "Expound", "Using the facts below, suggest activities that fit the trend but would fit in the missing gaps."},
+        { "Predict", "Using the facts below, predict what the character's life will be like in the future.  Use a story telling format."  },
+        { "Review", "Using the following product reviews, create an overall rating of the product. Describe the best and worst features of the product. " },
+        { "Picture", "Using the facts below, create a prompt that can be used to generate a picture about the characters life.  Be as vivid as possible but less than 4 sentences." },
         { "Collate", "Using only the questions from the list below, group similar questions together and "+
-                "give a suggested response from a teacher. Include a count of the questions that were similar for each.  "+format },
+                "give a suggested response from a teacher. Include a count of the questions that were similar for each.  " },
         { "Debate", "Using the facts below, create a debate script between two people.  Generate a speaking script for each person, "+ 
                 "listing each interaction as sentence pairs spoken by persona and personb. Mark each person's sentence with alternating styles " +
                 "designated with a css style called: persona and personb. Enclosed each sentence in a p tag. The entire debate should be in a div "+
-                "with style called: debate. " +format },
+                "with style called: debate. " },
         { "Quiz", "Using the facts below, create a list of quiz questions in the fill in the blank format where the blank is in the sentence. " +
-                "Give all the answers at the end of the quiz but spelled backwards. " +format},
+                "Give all the answers at the end of the quiz but spelled backwards. "},
         { "Organize", "Organize the questions below into categories and rephrase each set of questions in that category into a single question. " +
-                "The categories should be in a list format and the questions should be in a paragraph format.  Also provide answers to the question.  Answer in both english and Kannada. "+format },
-        { "Categorize", "Using the facts below, categorize the character's life into different sections.  Use a story telling format." +format },
+                "The categories should be in a list format and the questions should be in a paragraph format.  Also provide answers to the question. " },
+        { "Categorize", "Using the facts below, categorize the character's life into different sections.  Use a story telling format."  },
         { "Q&A", "Using only the questions in the list below, group them into the fewest categories possible but still making sense. "+ 
-                "Generate a clear and complete response to all the questions in format that easily flows from idea to idea. Include an intro and summary." + format}
+                "Generate a clear and complete response to all the questions in format that easily flows from idea to idea. Include an intro and summary." }
     };
     string queryText = "< Select a query on the left to analyze. >";
     string response = "";
@@ -210,7 +223,7 @@
         StateHasChanged();
 
         try {
-            var sf = new Query() { Text = queryText };
+            var sf = new Query() { Text = queryText  + format};
             string json = System.Text.Json.JsonSerializer.Serialize(sf);
 
             response = await util.GetSummary(_selectedBoard, json);
