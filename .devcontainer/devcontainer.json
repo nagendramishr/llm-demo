@@ -11,14 +11,19 @@
         },
         "ghcr.io/devcontainers/features/dotnet:1": {
             "version": "8.0"
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "lts"
         }
     },
-    "postCreateCommand": "az --version && docker --version",
+    "postCreateCommand": "az --version && docker --version && npm install -g azure-functions-core-tools@4 --unsafe-perm true",
     "customizations": {
         "vscode": {
             "extensions": [
                 "ms-azuretools.vscode-docker",
-                "ms-vscode.azurecli"
+                "ms-vscode.azurecli",
+                "ms-vscode.azure-account",
+                "ms-azuretools.vscode-azurefunctions"
             ]
         }
     }
