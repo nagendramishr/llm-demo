@@ -172,21 +172,21 @@
     List<string> users = new List<string>();
     Dictionary<string, string> queries = new Dictionary<string, string>
     {
-        { "Summary", "Use the facts below to create a summary of the character's life in a compact way without sacrificing readability." +
-                "Do not add any additional information or context, but if something doesn't make sense, add a commical commentary. " +
-                "Just present the facts as if this was a biography about the character's life." },
-        { "Critique", "Using the facts below, identify facts that dot't fit.  Explain why each one doesn't quite fit, illustrating it "+
-                "if neccessary in a comedic way.  Consolidate your response in the form of a critique." },
-        { "Story", "Using the facts below, generate a 3 paragraph, positive story that highlights the key themes of the facts. Ignore any negative facts and facts "+
-                "that don't pertain to the general theme of the story which is: The Impact of AI on Curry College. " },
-        { "Compare", "Using the facts below, compare the character's life to that of a famous person.  Use the same format as a biography."},
-        { "Analyze", "Using the facts below, analyze the character's life and identify any patterns or trends.  Use the scientific format." },
+        { "Summary", "Use the facts below to create a summary of the character's life in a compact way without sacrificing readability. " +
+                "Do not add any additional information or context, but if something doesn't make sense, add a comical commentary. " +
+                "Just present the facts as if this was a biography about the character's life. " },
+        { "Critique", "Using the facts below, identify facts that don't fit. Explain why each one doesn't quite fit, illustrating it if "+
+                "necessary in a comedic way. Consolidate your response in the form of a critique." },
+        { "Story", "Using the facts below, generate a 3-paragraph, positive story that highlights the key themes of the facts. Ignore any "+
+                "negative facts and facts that don't pertain to the general theme of the story which is: The Impact of AI on Curry College.. " },
+        { "Compare", "Using the facts below, compare the character's life to that of a famous person. Use the same format as a biography."},
+        { "Analyze", "Using the facts below, analyze the character's life and identify any patterns or trends. Use the scientific format." },
         { "Expound", "Using the facts below, suggest activities that fit the trend but would fit in the missing gaps."},
-        { "Predict", "Using the facts below, predict what the character's life will be like in the future.  Use a story telling format."  },
+        { "Predict", "Using the facts below, predict what the character's life will be like in the future. Use a storytelling format."  },
         { "Review", "Using the following product reviews, create an overall rating of the product. Describe the best and worst features of the product. " },
-        { "Picture", "Using the facts below, create a prompt that can be used to generate a picture about the characters life.  Be as vivid as possible but less than 4 sentences." },
-        { "Collate", "Using only the questions from the list below, group similar questions together and "+
-                "give a suggested response from a teacher. Include a count of the questions that were similar for each.  " },
+        { "Picture", "Using the facts below, create a prompt that can be used to generate a picture about the character's life. Be as vivid as possible but less than 4 sentences." },
+        { "Collate", "Using only the questions from the list below, group similar questions together and give a suggested response from a teacher. 
+                "Include a count of the questions that were similar for each.  " },
         { "Debate", "Using the facts below, create a debate script between two people.  Generate a speaking script for each person, "+ 
                 "listing each interaction as sentence pairs spoken by persona and personb. Mark each person's sentence with alternating styles " +
                 "designated with a css style called: persona and personb. Enclosed each sentence in a p tag. The entire debate should be in a div "+
@@ -196,9 +196,45 @@
         { "Organize", "Organize the questions below into categories and rephrase each set of questions in that category into a single question. " +
                 "The categories should be in a list format and the questions should be in a paragraph format.  Also provide answers to the question. " },
         { "Categorize", "Using the facts below, categorize the character's life into different sections.  Use a story telling format."  },
-        { "Q&A", "Using only the questions in the list below, group them into the fewest categories possible but still making sense. "+ 
-                "Generate a clear and complete response to all the questions in format that easily flows from idea to idea. Include an intro and summary." }
-    };
+        { "Q&A", "Using only the questions in the list below, group them into the fewest categories possible but still making sense. Generate a " +
+                "clear and complete response to all the questions in a format that easily flows from idea to idea. Include an intro and summary." },
+        {"Podcast": "Using the facts below, write a podcast script as if narrated by a storyteller with a warm and engaging tone. Structure it like " +
+                "a radio episode: Start with a hook, dive into a narrative centered on the key facts, and end with a thought-provoking conclusion or a " +
+                "fun twist. Make it friendly, simple, and suitable for rural high school teachers. Keep it within 3 to 5 minutes." },
+        { "Video": "Using the facts below, create a video script divided into 5\u20137 scenes. Each scene should include a short narration, a " +
+                "description of what should visually appear (e.g., animation, background, character actions), and suggested on-screen text or " +
+                "subtitles. Keep the tone educational but inspiring. Tailor for an audience of rural high school educators. " },
+        { "Exam": "Using the facts below, create 10 multiple-choice questions suitable for a high school exam. Each question should test comprehension, " +
+                "logical connection, or critical thinking. Provide four options (A to D) and mark the correct answer. At the end, include an " +
+                "answer key with just the correct options. " },
+        { "PPT": "Using the facts below, create an outline for a 6 slide PowerPoint presentation. Include a title for each slide and bullet points " +
+                "for its content. Use simple language, visual cues (suggested images/icons), and one key takeaway per slide. Add a title slide " +
+                "and a final slide with a call to action or reflection question. " },
+        { "PDF": "Using the facts below, format them into a printable, visually clean PDF document for high school teachers. Include a cover title, " +
+                "a short intro, the facts in an organized and labeled format (tables, lists, sections), and a conclusion. Add small icons or design " +
+                " suggestions to make it more engaging. " },
+        { "MindMap": "Using the facts below, generate a hierarchical mind map that categorizes and connects the facts into meaningful clusters. " +
+                "Each main node should represent a theme, with sub-nodes detailing supporting facts. Describe the structure in a way that a diagram " +
+                "can be drawn manually. " },
+        { "RolePlay": "Using the facts below, create a short role-play or skit script that dramatizes the key events or themes. Write dialog for at  " +
+                "least three characters. Keep the language simple, fun, and suitable for a high school setting. " },
+        { "Storybook": "Using the facts below, create a short, illustrated storybook draft for younger students (age 8 to 12). Use clear and simple  " +
+                "language, include a moral or message, and suggest an illustration idea for each page." },
+        { "Translate": "Translate the facts and summary below, keeping the meaning intact while using culturally  " +
+                "appropriate expressions. Avoid literal translation when context demands localization. " },
+        { "PoemOrSong": "Using the facts below, compose a short poem or a fun educational song. Keep it light, catchy, and easy to remember. Suitable  " +
+                "for high school students in a rural Indian classroom. " },
+        { "Awards": "Using the facts below, create a list of funny or meaningful awards and superlatives. Each award should have a short explanation,  " +
+                "such as 'Most Mysterious Event' or 'Unexpected Hero Moment.' " },
+        { "Timeline": "Create a chronological timeline based on the facts below. List key events with dates (if applicable), and write one sentence  " +
+                "describing each. If dates are missing, arrange them logically. " },
+        { "FactCheck": "Using the facts below, evaluate which facts are likely to be true, exaggerated, or questionable. Provide reasoning or ask  " +
+                "clarifying questions that could help verify the facts. " },
+        { "Puzzle": "Generate a list of 10\u201315 keywords based on the facts below that can be used to create a crossword or word search puzzle.  " +
+                "Include clues or brief definitions for each word. " },
+        { "LessonPlan": "Using the facts below, generate a one-day lesson plan for a high school class. Include an objective, teaching strategy,  " +
+                "activities, and a short assessment question. " }
+        };
     string queryText = "< Select a query on the left to analyze. >";
     string response = "";
     bool errorOccurred = false;
